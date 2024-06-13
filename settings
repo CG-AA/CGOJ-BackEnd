@@ -1,0 +1,20 @@
+{
+    "ssl_password": "replace_me",
+    "ssl_certificate_file": "server.crt",
+    "ssl_private_key_file": "server.key",
+    "CGFE_origin": "http://localhost:45800",
+    "port": 45801,
+    "jwt_secret": "replace_me",
+    "MySQL": {
+        "host": "host.docker.internal",
+        "user": "root",
+        "password": "replace_me",
+        "database": "CG_DB",
+        "port": 45802
+    },
+    "Redis": {
+        "host": "host.docker.internal",
+        "port": 45803
+    }
+
+}

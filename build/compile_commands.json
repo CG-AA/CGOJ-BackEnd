@@ -1,0 +1,52 @@
+[
+{
+  "directory": "/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/build",
+  "command": "/usr/bin/c++ -DCROW_ENABLE_SSL -I/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/CROW_ROUTEs -I/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/Programs -g -std=gnu++14 -o CMakeFiles/BackEnd.dir/API/api.cpp.o -c /media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/API/api.cpp",
+  "file": "/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/API/api.cpp"
+},
+{
+  "directory": "/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/build",
+  "command": "/usr/bin/c++ -DCROW_ENABLE_SSL -I/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/CROW_ROUTEs -I/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/Programs -g -std=gnu++14 -o CMakeFiles/BackEnd.dir/CROW_ROUTEs/CORStest.cpp.o -c /media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/CROW_ROUTEs/CORStest.cpp",
+  "file": "/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/CROW_ROUTEs/CORStest.cpp"
+},
+{
+  "directory": "/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/build",
+  "command": "/usr/bin/c++ -DCROW_ENABLE_SSL -I/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/CROW_ROUTEs -I/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/Programs -g -std=gnu++14 -o CMakeFiles/BackEnd.dir/CROW_ROUTEs/login.cpp.o -c /media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/CROW_ROUTEs/login.cpp",
+  "file": "/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/CROW_ROUTEs/login.cpp"
+},
+{
+  "directory": "/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/build",
+  "command": "/usr/bin/c++ -DCROW_ENABLE_SSL -I/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/CROW_ROUTEs -I/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/Programs -g -std=gnu++14 -o CMakeFiles/BackEnd.dir/CROW_ROUTEs/problem.cpp.o -c /media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/CROW_ROUTEs/problem.cpp",
+  "file": "/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/CROW_ROUTEs/problem.cpp"
+},
+{
+  "directory": "/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/build",
+  "command": "/usr/bin/c++ -DCROW_ENABLE_SSL -I/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/CROW_ROUTEs -I/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/Programs -g -std=gnu++14 -o CMakeFiles/BackEnd.dir/CROW_ROUTEs/problems.cpp.o -c /media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/CROW_ROUTEs/problems.cpp",
+  "file": "/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/CROW_ROUTEs/problems.cpp"
+},
+{
+  "directory": "/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/build",
+  "command": "/usr/bin/c++ -DCROW_ENABLE_SSL -I/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/CROW_ROUTEs -I/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/Programs -g -std=gnu++14 -o CMakeFiles/BackEnd.dir/CROW_ROUTEs/register.cpp.o -c /media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/CROW_ROUTEs/register.cpp",
+  "file": "/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/CROW_ROUTEs/register.cpp"
+},
+{
+  "directory": "/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/build",
+  "command": "/usr/bin/c++ -DCROW_ENABLE_SSL -I/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/CROW_ROUTEs -I/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/Programs -g -std=gnu++14 -o CMakeFiles/BackEnd.dir/Programs/get_ip.cpp.o -c /media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/Programs/get_ip.cpp",
+  "file": "/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/Programs/get_ip.cpp"
+},
+{
+  "directory": "/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/build",
+  "command": "/usr/bin/c++ -DCROW_ENABLE_SSL -I/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/CROW_ROUTEs -I/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/Programs -g -std=gnu++14 -o CMakeFiles/BackEnd.dir/Programs/harsh_SHA256.cpp.o -c /media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/Programs/harsh_SHA256.cpp",
+  "file": "/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/Programs/harsh_SHA256.cpp"
+},
+{
+  "directory": "/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/build",
+  "command": "/usr/bin/c++ -DCROW_ENABLE_SSL -I/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/CROW_ROUTEs -I/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/Programs -g -std=gnu++14 -o CMakeFiles/BackEnd.dir/Programs/jwt.cpp.o -c /media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/Programs/jwt.cpp",
+  "file": "/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/Programs/jwt.cpp"
+},
+{
+  "directory": "/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/build",
+  "command": "/usr/bin/c++ -DCROW_ENABLE_SSL -I/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/CROW_ROUTEs -I/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/Programs -g -std=gnu++14 -o CMakeFiles/BackEnd.dir/main.cpp.o -c /media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/main.cpp",
+  "file": "/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/main.cpp"
+}
+]
