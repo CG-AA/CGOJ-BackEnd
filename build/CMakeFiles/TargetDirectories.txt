@@ -1,3 +1,0 @@
-/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/build/CMakeFiles/BackEnd.dir
-/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/build/CMakeFiles/edit_cache.dir
-/media/cg/D/WorkSpace/club/OJ_rewrite/judge/BackEnd/build/CMakeFiles/rebuild_cache.dir
