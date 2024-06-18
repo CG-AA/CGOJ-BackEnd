@@ -11,10 +11,6 @@
         "password": "replace_me",
         "database": "CG_DB",
         "port": 45802
-    },
-    "Redis": {
-        "host": "host.docker.internal",
-        "port": 45803
     }
 
 }

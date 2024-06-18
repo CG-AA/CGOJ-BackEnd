@@ -4,10 +4,10 @@
 #include <jwt-cpp/jwt.h>
 
 // To get the problems(and their basic info) that the user has access to
-void ROUTE_problems(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& sqlAPI){
+void ROUTE_problems(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& API){
     CROW_ROUTE(app, "/problems")
     .methods("GET"_method)
-    ([&settings, IP, &sqlAPI](const crow::request& req){
+    ([&settings, IP, &API](const crow::request& req){
         nlohmann::json roles;
         try {
             std::string jwt = req.get_header_value("Authorization");
@@ -15,6 +15,9 @@ void ROUTE_problems(crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
             roles = getRoles(jwt, settings, IP);
         } catch (const std::exception& e) {
             return crow::response(401, e.what());
+        }
+        if (roles.empty()){
+            auto cached_everyone_problems = API->getRedisValue("ever");
         }
         roles.push_back("everyone");
         std::string query = "SELECT problems.* FROM problems JOIN problem_role ON problems.id = problem_role.problem_id WHERE problem_role.role_name IN (";
@@ -37,7 +40,7 @@ void ROUTE_problems(crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
         int offset = (page - 1) * problemsPerPage; // assuming 10 problems per page
         query += " LIMIT " + std::to_string(problemsPerPage) + " OFFSET " + std::to_string(offset);
 
-        std::unique_ptr<sql::PreparedStatement> pstmt = sqlAPI->prepareStatement(query);
+        std::unique_ptr<sql::PreparedStatement> pstmt = API->prepareStatement(query);
         for (size_t i = 0; i < roles.size(); i++) {
             pstmt->setString(i + 1, roles[i].get<std::string>());
         }

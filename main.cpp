@@ -3,8 +3,6 @@
 
 #include <nlohmann/json.hpp>
 
-#include <cpp_redis/cpp_redis>
-
 #include <fstream>
 #include <string>
 
@@ -53,56 +51,13 @@ nlohmann::json loadSettings(const std::string& defaultSettingsFile, const std::s
     return defaultSettings;
 }
 
-
-std::atomic<bool> isReconnecting(false);
-void setupRedisClient(cpp_redis::client& client, const nlohmann::json& settings) {
-    try {
-        if (!settings.contains("Redis") || !settings["Redis"].is_object()) {
-            std::cerr << "Error: 'Redis' key missing or not an object in settings" << std::endl;
-            throw std::runtime_error("Invalid settings");
-        }
-
-        if (!settings["Redis"].contains("host") || !settings["Redis"]["host"].is_string()) {
-            std::cerr << "Error: 'host' key missing or not a string in 'Redis' settings" << std::endl;
-            throw std::runtime_error("Invalid settings");
-        }
-
-        if (!settings["Redis"].contains("port") || !settings["Redis"]["port"].is_number_integer()) {
-            std::cerr << "Error: 'port' key missing or not an integer in 'Redis' settings" << std::endl;
-            throw std::runtime_error("Invalid settings");
-        }
-
-        std::string host = settings["Redis"]["host"].get<std::string>();
-        int port = settings["Redis"]["port"].get<int>();
-
-        cpp_redis::connect_callback_t callback = [&client, &host, &port, &callback](const std::string& /*host*/, std::size_t /*port*/, cpp_redis::connect_state status) {
-            if (status == cpp_redis::connect_state::dropped || status == cpp_redis::connect_state::failed) {
-                if (!isReconnecting.exchange(true)) {
-                    std::cerr << "Redis connection dropped or failed. Retrying in 10 seconds..." << std::endl;
-                    std::thread([=, &client, &callback]() {
-                        std::this_thread::sleep_for(std::chrono::seconds(10));
-                        client.connect(host, port, callback);
-                        isReconnecting = false;
-                    }).detach();
-                }
-            }
-        };
-        client.connect(host, port, callback);
-    } catch (std::exception& e) {
-        std::cerr << "Error setting up Redis client: " << e.what() << std::endl;
-        throw;
-    }
-}
-
 auto setupAPIs(const nlohmann::json& settings) {
     return std::make_unique<APIs>(
         settings["MySQL"]["host"].get<std::string>(),
         settings["MySQL"]["user"].get<std::string>(),
         settings["MySQL"]["password"].get<std::string>(),
         settings["MySQL"]["database"].get<std::string>(),
-        settings["MySQL"]["port"].get<int>(),
-        settings["Redis"]["host"].get<std::string>(),
-        settings["Redis"]["port"].get<int>()
+        settings["MySQL"]["port"].get<int>()
     );
 }
 
@@ -143,7 +98,6 @@ int main()
     settings = loadSettings("settings", "settings.local");
     // crow::ssl_context_t ctx(crow::ssl_context_t::tlsv13);
     // setupSSL(ctx);
-    setupRedisClient(redisClient, settings);
     setupCORS();
     setupRoutes();
     api = setupAPIs(settings);

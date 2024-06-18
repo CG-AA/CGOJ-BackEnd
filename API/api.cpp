@@ -1,12 +1,10 @@
 #include "api.hpp"
 
-APIs::APIs(const std::string& SQL_host, const std::string& SQL_user, const std::string& SQL_password, const std::string& SQL_database, int SQL_port, const std::string& Redis_host, int Redis_port){
+APIs::APIs(const std::string& SQL_host, const std::string& SQL_user, const std::string& SQL_password, const std::string& SQL_database, int SQL_port){
     driver = sql::mysql::get_mysql_driver_instance();
     std::string hostWithPort = SQL_host + ":" + std::to_string(SQL_port);
     con = std::unique_ptr<sql::Connection>(driver->connect(hostWithPort, SQL_user, SQL_password));
     con->setSchema(SQL_database);
-
-    redis.connect(Redis_host, Redis_port);
 }
 
 std::unique_ptr<sql::ResultSet> APIs::read(const std::string& query) {
@@ -25,11 +23,3 @@ std::unique_ptr<sql::PreparedStatement> APIs::prepareStatement(const std::string
     return std::unique_ptr<sql::PreparedStatement>(con->prepareStatement(query));
 }
 
-void APIs::setRedisValue(const std::string& key, const std::string& value) {
-    redis.set(key, value);
-    redis.sync_commit();
-}
-
-std::future<cpp_redis::reply> APIs::getRedisValue(const std::string& key) {
-    return redis.get(key);
-}

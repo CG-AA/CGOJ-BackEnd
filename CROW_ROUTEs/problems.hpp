@@ -5,4 +5,4 @@
 #include <nlohmann/json.hpp>
 #include "../API/api.hpp"
 
-void ROUTE_problems(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& sqlAPI);
+void ROUTE_problems(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& API);
