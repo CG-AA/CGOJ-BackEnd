@@ -12,6 +12,7 @@
 #include <list>
 #include <cstddef>
 #include <stdexcept>
+#include <mutex>
 
 namespace cache {
 
@@ -26,6 +27,7 @@ public:
 	}
 	
 	void put(const key_t& key, const value_t& value) {
+		std::lock_guard<std::mutex> lock(_mutex);
 		auto it = _cache_items_map.find(key);
 		_cache_items_list.push_front(key_value_pair_t(key, value));
 		if (it != _cache_items_map.end()) {
@@ -43,6 +45,7 @@ public:
 	}
 	
 	const value_t& get(const key_t& key) {
+		std::lock_guard<std::mutex> lock(_mutex);
 		auto it = _cache_items_map.find(key);
 		if (it == _cache_items_map.end()) {
 			throw std::range_error("There is no such key in cache");
@@ -53,10 +56,12 @@ public:
 	}
 	
 	bool exists(const key_t& key) const {
+		std::lock_guard<std::mutex> lock(_mutex);
 		return _cache_items_map.find(key) != _cache_items_map.end();
 	}
 	
 	size_t size() const {
+		std::lock_guard<std::mutex> lock(_mutex);
 		return _cache_items_map.size();
 	}
 	
@@ -64,6 +69,7 @@ private:
 	std::list<key_value_pair_t> _cache_items_list;
 	std::unordered_map<key_t, list_iterator_t> _cache_items_map;
 	size_t _max_size;
+	std::mutex _mutex;
 };
 
 } // namespace cache
