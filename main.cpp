@@ -12,6 +12,7 @@
 #include "CROW_ROUTEs/login.hpp"
 #include "CROW_ROUTEs/CORStest.hpp"
 #include "CROW_ROUTEs/problems.hpp"
+#include "CROW_ROUTEs/problem.hpp"
 
 #include "Programs/get_ip.hpp"
 
@@ -24,6 +25,7 @@ std::string IP;
 std::atomic<bool> problems_everyone_cache_hit = false;
 
 cache::lru_cache<int8_t, nlohmann::json> problems_everyone_cache(100);
+cache::lru_cache<int16_t, nlohmann::json> problem_cache(1000);
 
 nlohmann::json loadSettings(const std::string& defaultSettingsFile, const std::string& localSettingsFile) {
     // Load settings from the default file
@@ -92,6 +94,7 @@ void setupCORS() {
 void setupRoutes() {
     ROUTE_CORStest(app, settings);
     ROUTE_problems(app, settings, IP, api, problems_everyone_cache, problems_everyone_cache_hit);
+    ROUTE_problem(app, settings, IP, api, problem_cache);
     ROUTE_Register(app, settings, IP, api);
     ROUTE_Login(app, settings, IP, api);
 }

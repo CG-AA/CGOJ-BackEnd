@@ -11,6 +11,14 @@
         "password": "replace_me",
         "database": "CG_DB",
         "port": 45802
+    },
+    "permission_flags": {
+        "problems": {
+            "view": 0,
+            "view_solutions": 1,
+            "edit": 2,
+            "delete": 3
+        }
     }
 
 }
