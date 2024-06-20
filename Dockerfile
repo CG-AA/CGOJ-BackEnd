@@ -11,8 +11,7 @@ RUN apt-get update -y && \
     ln -s /usr/lib/libtcmalloc_minimal.so.4 /usr/lib/libtcmalloc_minimal.so && \
     git clone https://github.com/CrowCpp/Crow.git && \
     git clone https://github.com/Thalhammer/jwt-cpp.git && \
-    git clone https://github.com/kisli/vmime.git && \
-    git clone https://github.com/cpp-redis/cpp_redis.git
+    git clone https://github.com/kisli/vmime.git
 
 WORKDIR /building/Crow
 RUN mkdir build
@@ -31,15 +30,6 @@ WORKDIR /building/vmime/build
     RUN cmake .. -DVMIME_SENDMAIL_PATH=/usr/bin/msmtp && \
         cmake --build . && \
         make install
-
-
-WORKDIR /building/cpp_redis
-RUN git submodule init && git submodule update && \
-    mkdir build && \
-    cd build && \
-    cmake .. -DCMAKE_BUILD_TYPE=Release && \
-    make && \
-    make install
 
 WORKDIR /building/libbcrypt
 RUN git clone https://github.com/trusch/libbcrypt && \
@@ -71,6 +61,7 @@ RUN apt-get update -y && \
 
 COPY --from=build /app/build/BackEnd .
 COPY --from=build /app/settings .
+COPY --from=build /include ./include
 
 EXPOSE 45801
 

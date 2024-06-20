@@ -13,8 +13,12 @@ file(GLOB SOURCE_FILES
         "API/*.cpp"
 )
 
+file(GLOB HEADER_FILES
+        "include/*.h"
+)
+
 # Add source files
-add_executable(BackEnd ${SOURCE_FILES} main.cpp)
+add_executable(BackEnd ${SOURCE_FILES} ${HEADER_FILES} main.cpp)
 
 # - pthread: provides support for multithreading
 # - crypto: provides cryptographic functions
