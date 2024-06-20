@@ -27,7 +27,6 @@ add_executable(BackEnd ${SOURCE_FILES} ${HEADER_FILES} main.cpp)
 # - mysqlcppconn: provides MySQL database connectivity
 # - vmime: provides support for handling MIME messages
 # - bcrypt: provides support for bcrypt password hashing
-# - cpp_redis and tacopie: provides support for Redis
-target_link_libraries(BackEnd pthread crypto ssl curl mysqlcppconn vmime bcrypt cpp_redis tacopie)
+target_link_libraries(BackEnd pthread crypto ssl curl mysqlcppconn vmime bcrypt)
 
 add_definitions(-DCROW_ENABLE_SSL)
