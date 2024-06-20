@@ -22,7 +22,7 @@ nlohmann::json settings;
 std::unique_ptr<APIs> api;
 crow::App<crow::CORSHandler> app;
 std::string IP;
-std::atomic<bool> problems_everyone_cache_hit = false;
+std::atomic<bool> problems_everyone_cache_hit{false};
 
 cache::lru_cache<int8_t, nlohmann::json> problems_everyone_cache(100);
 cache::lru_cache<int16_t, nlohmann::json> problem_cache(1000);
