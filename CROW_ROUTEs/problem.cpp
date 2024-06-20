@@ -21,8 +21,8 @@ bool view_solutions_permission(nlohmann::json& settings, nlohmann::json& roles, 
     return false;
 }
 
-void ROUTE_problems(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& sqlAPI, cache::lru_cache<int16_t, nlohmann::json>& problem_cache){
-    CROW_ROUTE(app, "/problems/<int>")
+void ROUTE_problem(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& sqlAPI, cache::lru_cache<int16_t, nlohmann::json>& problem_cache){
+    CROW_ROUTE(app, "/problem/<int>")
     .methods("GET"_method)
     ([&settings, IP, &sqlAPI, &problem_cache](const crow::request& req, int problemId){
         nlohmann::json roles;

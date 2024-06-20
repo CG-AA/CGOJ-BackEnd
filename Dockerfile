@@ -61,7 +61,7 @@ RUN apt-get update -y && \
 
 COPY --from=build /app/build/BackEnd .
 COPY --from=build /app/settings .
-COPY --from=build /include ./include
+COPY --from=build /app/include ./include
 
 EXPOSE 45801
 
