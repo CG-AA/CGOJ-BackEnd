@@ -116,10 +116,10 @@ void ROUTE_Register(crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
             pstmt->executeUpdate();
 
             //get user_id
-            std::string query = "SELECT id FROM users WHERE email = ?;";
-            std::unique_ptr<sql::PreparedStatement> pstmt = api->prepareStatement(query);
+            query = "SELECT id FROM users WHERE email = ?;";
+            pstmt = api->prepareStatement(query);
             pstmt->setString(1, body["email"].get<std::string>());
-            std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+            res = std::unique_ptr<sql::ResultSet>(pstmt->executeQuery());
             if (res->next()) {
                 user_id = res->getInt("id");
             } else {
