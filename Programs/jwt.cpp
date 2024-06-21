@@ -11,8 +11,9 @@ void verifyJWT(std::string jwt, nlohmann::json& settings, std::string BE_IP) {
         verifier.verify(decoded);
         return;
     } catch (const std::exception& e) {
-        std::cerr << "Failed to verify JWT: " << e.what() << std::endl;
-        throw; // rethrow the exception to be handled by the caller
+        std::string error = "Failed to verify JWT: " + std::string(e.what());
+        std::cerr << error << std::endl;
+        throw std::runtime_error(error);
     }
 }
 
