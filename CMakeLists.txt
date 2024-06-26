@@ -8,13 +8,11 @@ include_directories(CROW_ROUTEs)
 include_directories(Programs)
 
 file(GLOB SOURCE_FILES
-        "CROW_ROUTEs/*.cpp"
-        "Programs/*.cpp"
-        "API/*.cpp"
+        "src/*.cpp"
 )
 
 file(GLOB HEADER_FILES
-        "include/*.h"
+        "src/include/*.h"
 )
 
 # Add source files

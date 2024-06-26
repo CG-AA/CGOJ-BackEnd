@@ -1,8 +1,33 @@
-/* 
- * File:   lrucache.hpp
- * Author: Alexander Ponomarev
- *
- * Created on June 20, 2013, 5:09 PM
+/**
+ * @file lrucache.hpp
+ * @brief Simple LRU (Least Recently Used) cache implementation.
+ * 
+ * This file contains the implementation of a simple LRU cache. The LRU cache is a data structure
+ * that holds a fixed number of key-value pairs. When the cache reaches its capacity and a new
+ * key-value pair needs to be inserted, the least recently used (LRU) key-value pair is evicted
+ * from the cache to make room for the new pair.
+ * 
+ * This implementation uses a combination of a std::list and a std::unordered_map to achieve
+ * O(1) time complexity for insert, delete, and access operations. The std::list is used to keep
+ * track of the order of elements (with the most recently used at the front), and the
+ * std::unordered_map is used for fast lookup of elements in the list.
+ * 
+ * @tparam key_t The type of the keys in the cache.
+ * @tparam value_t The type of the values in the cache.
+ * 
+ * Usage example:
+ * 
+ * cache::lru_cache<int, std::string> my_cache(5); // Create a cache for up to 5 key-value pairs
+ * my_cache.put(1, "one"); // Insert a key-value pair into the cache
+ * try {
+ *     std::string value = my_cache.get(1); // Access a value by its key
+ *     std::cout << value << std::endl;
+ * } catch (const std::range_error& e) {
+ *     std::cerr << e.what() << std::endl;
+ * }
+ * 
+ * @author Alexander Ponomarev
+ * @date June 20, 2013
  */
 
 #ifndef _LRUCACHE_HPP_INCLUDED_
