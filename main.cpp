@@ -15,7 +15,6 @@
 
 #include "src/CROW_ROUTEs/register.hpp"
 #include "src/CROW_ROUTEs/login.hpp"
-#include "src/CROW_ROUTEs/CORStest.hpp"
 #include "src/CROW_ROUTEs/problems.hpp"
 #include "src/CROW_ROUTEs/problem.hpp"
 
@@ -135,7 +134,6 @@ void setupCORS() {
  * This function registers various routes for handling different requests.
  */
 void setupRoutes() {
-    ROUTE_CORStest(app, settings);
     ROUTE_problems(app, settings, IP, api, problems_everyone_cache, problems_everyone_cache_hit);
     ROUTE_problem(app, settings, IP, api, problem_cache);
     ROUTE_Register(app, settings, IP, api);
