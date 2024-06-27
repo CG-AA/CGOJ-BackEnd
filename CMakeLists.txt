@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 14)
 include_directories(CROW_ROUTEs)
 include_directories(Programs)
 
-file(GLOB SOURCE_FILES
+file(GLOB_RECURSE SOURCE_FILES
         "src/*.cpp"
 )
 
