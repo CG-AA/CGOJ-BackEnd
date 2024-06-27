@@ -15,7 +15,7 @@ void ROUTE_problems(crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
         try {
             std::string jwt = req.get_header_value("Authorization");
             verifyJWT(jwt, settings, IP);
-            roles = getRoles(jwt, settings, IP);
+            roles = getRoles(jwt);
         } catch (const std::exception& e) {
             return crow::response(401, e.what());
         }
