@@ -1,0 +1,52 @@
+\doxysection{Rate\+Limit Class Reference}
+\hypertarget{classRateLimit}{}\label{classRateLimit}\index{RateLimit@{RateLimit}}
+
+
+Rate limiting for registration.  
+
+
+
+
+{\ttfamily \#include $<$register.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{classRateLimit_aeb4c50f3ad18523c8c76f12a17fd543b}{check\+\_\+rate\+\_\+limit}} (std\+::string ip, std\+::string email)
+\begin{DoxyCompactList}\small\item\em if a given IP address and email combination is within the rate limit. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Rate limiting for registration. 
+
+This class provides rate limiting functionality for the user registration process. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classRateLimit_aeb4c50f3ad18523c8c76f12a17fd543b}\index{RateLimit@{RateLimit}!check\_rate\_limit@{check\_rate\_limit}}
+\index{check\_rate\_limit@{check\_rate\_limit}!RateLimit@{RateLimit}}
+\doxysubsubsection{\texorpdfstring{check\_rate\_limit()}{check\_rate\_limit()}}
+{\footnotesize\ttfamily \label{classRateLimit_aeb4c50f3ad18523c8c76f12a17fd543b} 
+bool Rate\+Limit\+::check\+\_\+rate\+\_\+limit (\begin{DoxyParamCaption}\item[{std\+::string}]{ip}{, }\item[{std\+::string}]{email}{}\end{DoxyParamCaption})}
+
+
+
+if a given IP address and email combination is within the rate limit. 
+
+This method ensures thread-\/safe access to the rate limit data and performs a cleanup before checking the rate limit for the given IP and email. If the IP is not found in the rate limit data, it adds the IP and email to the data and allows the request. If the IP is found, it checks if the email is already associated with the IP. If the email is found, or if there is an empty slot for a new email, the request is allowed. Otherwise, the request is denied, indicating the rate limit has been reached for the given IP.
+
+
+\begin{DoxyParams}{Parameters}
+{\em ip} & The IP address of the user making the request. \\
+\hline
+{\em email} & The email address of the user making the request. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the request is within the rate limit; false otherwise. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/\+CROW\+\_\+\+ROUTEs/\mbox{\hyperlink{register_8hpp}{register.\+hpp}}\item 
+src/\+CROW\+\_\+\+ROUTEs/register.\+cpp\end{DoxyCompactItemize}

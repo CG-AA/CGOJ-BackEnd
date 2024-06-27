@@ -1,0 +1,92 @@
+\doxysection{src/\+Programs/jwt.cpp File Reference}
+\hypertarget{jwt_8cpp}{}\label{jwt_8cpp}\index{src/Programs/jwt.cpp@{src/Programs/jwt.cpp}}
+
+
+Implementation of the JSON Web Token (JWT) functions.  
+
+
+{\ttfamily \#include "{}jwt.\+hpp"{}}\newline
+Include dependency graph for jwt.\+cpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{jwt_8cpp__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{jwt_8cpp_a42a51f163c4e990a99e3beb11f3c0029}{verify\+JWT}} (std\+::string jwt, nlohmann\+::json \&\mbox{\hyperlink{main_8cpp_a226e5c87ec0382336e0be64e07be3723}{settings}}, std\+::string BE\+\_\+\+IP)
+\item 
+nlohmann\+::json \mbox{\hyperlink{jwt_8cpp_a67af989245d9a88791f052e0b0f4ce94}{get\+Roles}} (std\+::string jwt)
+\item 
+std\+::string \mbox{\hyperlink{jwt_8cpp_afed241b2c78eb63b90349ece2e7198c7}{generate\+JWT}} (nlohmann\+::json \&\mbox{\hyperlink{main_8cpp_a226e5c87ec0382336e0be64e07be3723}{settings}}, std\+::string BE\+\_\+\+IP, int user\+\_\+id, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classAPIs}{APIs}} $>$ \&sqlapi)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implementation of the JSON Web Token (JWT) functions. 
+
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{jwt_8cpp_afed241b2c78eb63b90349ece2e7198c7}\index{jwt.cpp@{jwt.cpp}!generateJWT@{generateJWT}}
+\index{generateJWT@{generateJWT}!jwt.cpp@{jwt.cpp}}
+\doxysubsubsection{\texorpdfstring{generateJWT()}{generateJWT()}}
+{\footnotesize\ttfamily \label{jwt_8cpp_afed241b2c78eb63b90349ece2e7198c7} 
+std\+::string generate\+JWT (\begin{DoxyParamCaption}\item[{nlohmann\+::json \&}]{settings}{, }\item[{std\+::string}]{IP}{, }\item[{int}]{user\+\_\+id}{, }\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classAPIs}{APIs}} $>$ \&}]{sql\+API}{}\end{DoxyParamCaption})}
+
+Generates a JSON Web Token (JWT) for the given user.
+
+
+\begin{DoxyParams}{Parameters}
+{\em settings} & The JSON object containing the JWT secret. \\
+\hline
+{\em BE\+\_\+\+IP} & The IP address of the backend server. \\
+\hline
+{\em user\+\_\+id} & The ID of the user. \\
+\hline
+{\em sqlapi} & A unique pointer to the \doxylink{classAPIs}{APIs} object for executing SQL queries. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The generated JWT as a string. 
+\end{DoxyReturn}
+\Hypertarget{jwt_8cpp_a67af989245d9a88791f052e0b0f4ce94}\index{jwt.cpp@{jwt.cpp}!getRoles@{getRoles}}
+\index{getRoles@{getRoles}!jwt.cpp@{jwt.cpp}}
+\doxysubsubsection{\texorpdfstring{getRoles()}{getRoles()}}
+{\footnotesize\ttfamily \label{jwt_8cpp_a67af989245d9a88791f052e0b0f4ce94} 
+nlohmann\+::json get\+Roles (\begin{DoxyParamCaption}\item[{std\+::string}]{jwt}{}\end{DoxyParamCaption})}
+
+Retrieves the roles from a JSON Web Token (JWT).
+
+
+\begin{DoxyParams}{Parameters}
+{\em jwt} & The JSON Web Token. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A JSON object containing the roles extracted from the JWT. 
+\end{DoxyReturn}
+\Hypertarget{jwt_8cpp_a42a51f163c4e990a99e3beb11f3c0029}\index{jwt.cpp@{jwt.cpp}!verifyJWT@{verifyJWT}}
+\index{verifyJWT@{verifyJWT}!jwt.cpp@{jwt.cpp}}
+\doxysubsubsection{\texorpdfstring{verifyJWT()}{verifyJWT()}}
+{\footnotesize\ttfamily \label{jwt_8cpp_a42a51f163c4e990a99e3beb11f3c0029} 
+void verify\+JWT (\begin{DoxyParamCaption}\item[{std\+::string}]{jwt}{, }\item[{nlohmann\+::json \&}]{settings}{, }\item[{std\+::string}]{BE\+\_\+\+IP}{}\end{DoxyParamCaption})}
+
+Verifies the authenticity of a JSON Web Token (JWT) using the provided settings and backend IP address.
+
+
+\begin{DoxyParams}{Parameters}
+{\em jwt} & The JWT to be verified. \\
+\hline
+{\em settings} & The JSON object containing the settings for JWT verification. \\
+\hline
+{\em BE\+\_\+\+IP} & The IP address of the backend server.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em std\+::runtime\+\_\+error} & if the JWT verification fails. \\
+\hline
+\end{DoxyExceptions}

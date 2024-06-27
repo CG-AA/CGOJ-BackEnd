@@ -1,22 +1,7 @@
 /**
  * @file problem.hpp
- * Header file for problem-related routes and functionalities in a coding problems platform.
+ * @brief Header file for the problem route.
  * 
- * This file declares the setup for a route that handles fetching problem details, including title, description, samples, tags, and solutions based on user permissions.
- * It utilizes the CROW web server library for routing, nlohmann::json for JSON manipulation, and a custom LRU cache implementation for caching problem details.
- *
- * Dependencies:
- * - crow.h: Main header file for the CROW web server library.
- * - crow/middlewares/cors.h: Header file for CORS middleware in CROW, enabling cross-origin requests.
- * - nlohmann/json.hpp: Header file for the JSON library for modern C++, used for JSON manipulation.
- * - lrucache.hpp: Header file for the LRU (Least Recently Used) cache implementation.
- * - api.hpp: Header file for the API interface, used for database interactions.
- *
- * Functions:
- * - ROUTE_problem: Declares the function for setting up the route to fetch problem details. It requires the CROW application object, application settings, client IP, SQL API object, and problem cache as parameters.
- *
- * Usage:
- * Include this header file in the server application to set up and handle the route for fetching problem details. Ensure all dependencies are properly included and linked in the project.
  */
 #pragma once
 
@@ -26,16 +11,45 @@
 #include "../include/lrucache.hpp"
 #include "../API/api.hpp"
 
+namespace {
 /**
- * @brief Sets up the route for fetching problem details.
+ * @brief Checks if the user has the specified permission.
  * 
- * This function defines a GET route for retrieving details of a specific problem by its ID.
- * It checks for authorization, fetches problem details from the database or cache, and determines if solutions should be included based on permissions.
+ * @param user_permission The permission flags of the user.
+ * @param permission_name The name of the permission to check.
+ * @param settings The application settings JSON object.
+ * @return true if the user has the permission, false otherwise.
  * 
- * @param app The CROW application object used to define the route.
- * @param settings A JSON object containing application settings.
- * @param IP The IP address of the client making the request.
- * @param sqlAPI A pointer to the SQL API object for database operations.
- * @param problem_cache A cache object for storing and retrieving problem details.
+ * @throws std::runtime_error if the permission is not found in the settings.
+ * 
+ * @note The function uses bitwise operations to check the permission flags.
+ * @note only accessable by the same file
+ */
+bool have_permisson(int user_permission, std::string permission_name, nlohmann::json& settings);
+
+/**
+ * @brief Checks if the user has permission to view solutions for a problem.
+ * 
+ * @param settings The application settings JSON object.
+ * @param roles The roles of the user.
+ * @param problem The problem JSON object.
+ * @return true if the user has permission to view solutions, false otherwise.
+ * 
+ * @note The function checks the permissions for each role associated with the problem.
+ * @note only accessable by the same file
+ */
+bool view_solutions_permission(nlohmann::json& settings, nlohmann::json& roles, nlohmann::json& problem);
+}
+
+/**
+ * @brief Configures a route for accessing problem details.
+ * 
+ * This function sets up a route "/problem/<int>" on the provided Crow application instance. It handles GET requests to fetch problem details based on the problem ID. The function checks for authorization, validates roles, and retrieves problem details from a cache or database. It also handles permissions for viewing solutions.
+ * 
+ * @param app Reference to the Crow application instance configured with CORSHandler middleware.
+ * @param settings JSON object containing configuration settings, used for JWT verification and role-based access control.
+ * @param IP String representing the IP address for additional security checks in JWT verification.
+ * @param sqlAPI Unique pointer to an APIs instance, used for database operations.
+ * @param problem_cache Reference to an LRU cache instance for caching problem details.
  */
 void ROUTE_problem(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& sqlAPI, cache::lru_cache<int16_t, nlohmann::json>& problem_cache);

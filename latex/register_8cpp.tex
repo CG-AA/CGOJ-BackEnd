@@ -1,0 +1,98 @@
+\doxysection{src/\+CROW\+\_\+\+ROUTEs/register.cpp File Reference}
+\hypertarget{register_8cpp}{}\label{register_8cpp}\index{src/CROW\_ROUTEs/register.cpp@{src/CROW\_ROUTEs/register.cpp}}
+{\ttfamily \#include "{}register.\+hpp"{}}\newline
+{\ttfamily \#include "{}../\+Programs/jwt.\+hpp"{}}\newline
+{\ttfamily \#include $<$cppconn/resultset.\+h$>$}\newline
+{\ttfamily \#include $<$cppconn/prepared\+\_\+statement.\+h$>$}\newline
+{\ttfamily \#include $<$vmime/vmime.\+hpp$>$}\newline
+{\ttfamily \#include $<$bcrypt/\+BCrypt.\+hpp$>$}\newline
+Include dependency graph for register.\+cpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{register_8cpp__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{register_8cpp_ac0f8312d3b5e9958ea002d76ee814223}{ROUTE\+\_\+\+Register}} (crow\+::\+App$<$ crow\+::\+CORSHandler $>$ \&\mbox{\hyperlink{main_8cpp_afce6e82e7f4ddd54d9bbf8894ccc85ab}{app}}, nlohmann\+::json \&\mbox{\hyperlink{main_8cpp_a226e5c87ec0382336e0be64e07be3723}{settings}}, std\+::string \mbox{\hyperlink{main_8cpp_a57430442c3d9a40c976af8e13ab34029}{IP}}, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classAPIs}{APIs}} $>$ \&\mbox{\hyperlink{main_8cpp_ab8701c10295234ac200a898c50dbbc76}{api}})
+\begin{DoxyCompactList}\small\item\em Handles the user registration process. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{register_8cpp_a48776b10eb0180cb961c3fb50e4c938e}\label{register_8cpp_a48776b10eb0180cb961c3fb50e4c938e} 
+\mbox{\hyperlink{classRateLimit}{Rate\+Limit}} {\bfseries rate\+Limit}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implementation file for handling user registration in a web application.
+
+This file includes the implementation of the route for user registration, including rate limiting, user data validation, password hashing, and JWT token generation.
+
+Dependencies\+:
+\begin{DoxyItemize}
+\item \doxylink{register_8hpp_source}{register.\+hpp}\+: Header file for registration route declaration.
+\item ../\+Programs/jwt.hpp\+: Header file for JWT (JSON Web Token) related functions.
+\item cppconn/resultset.\+h \& cppconn/prepared\+\_\+statement.\+h\+: My\+SQL Connector/\+C++ for executing SQL queries.
+\item vmime/vmime.\+hpp\+: VMime library for handling email verification (not fully implemented).
+\item bcrypt/\+BCrypt.\+hpp\+: BCrypt library for hashing passwords securely.
+\end{DoxyItemize}
+
+Classes\+:
+\begin{DoxyItemize}
+\item \doxylink{classIPrateLimit}{IPrate\+Limit}\+: Handles rate limiting by storing recent email attempts.
+\item \doxylink{classRateLimit}{Rate\+Limit}\+: Manages rate limiting for registration requests, including cleanup based on day changes.
+\end{DoxyItemize}
+
+Functions\+:
+\begin{DoxyItemize}
+\item ROUTE\+\_\+\+Register\+: Sets up the route for user registration. It performs rate limiting, user data validation, password hashing with BCrypt, and JWT token generation for successful registrations.
+\end{DoxyItemize}
+
+Usage\+: This implementation is part of the backend server of a web application. It should be compiled with the rest of the project and run on a server. The ROUTE\+\_\+\+Register function needs to be called during the server setup to enable the "{}/register"{} endpoint for user registration. 
+
+\doxysubsection{Function Documentation}
+\Hypertarget{register_8cpp_ac0f8312d3b5e9958ea002d76ee814223}\index{register.cpp@{register.cpp}!ROUTE\_Register@{ROUTE\_Register}}
+\index{ROUTE\_Register@{ROUTE\_Register}!register.cpp@{register.cpp}}
+\doxysubsubsection{\texorpdfstring{ROUTE\_Register()}{ROUTE\_Register()}}
+{\footnotesize\ttfamily \label{register_8cpp_ac0f8312d3b5e9958ea002d76ee814223} 
+void ROUTE\+\_\+\+Register (\begin{DoxyParamCaption}\item[{crow\+::\+App$<$ crow\+::\+CORSHandler $>$ \&}]{app}{, }\item[{nlohmann\+::json \&}]{settings}{, }\item[{std\+::string}]{IP}{, }\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classAPIs}{APIs}} $>$ \&}]{api}{}\end{DoxyParamCaption})}
+
+
+
+Handles the user registration process. 
+
+This function sets up a POST route at "{}/register"{} to handle user registration requests. It includes rate limiting, user data validation, password hashing, and JWT token generation.
+
+
+\begin{DoxyParams}{Parameters}
+{\em app} & Reference to the CROW application object, used to define the route. \\
+\hline
+{\em settings} & Reference to a JSON object containing application settings. \\
+\hline
+{\em IP} & String representing the client\textquotesingle{}s IP address, used for logging. \\
+\hline
+{\em api} & Unique pointer to the \doxylink{classAPIs}{APIs} object, facilitating database interactions.\\
+\hline
+\end{DoxyParams}
+The function performs the following operations\+:
+\begin{DoxyItemize}
+\item Rate limiting\+: Uses the {\ttfamily rate\+Limit} object to prevent abuse from frequent requests.
+\item User data validation\+: Checks for the uniqueness of the email address in the database.
+\item Password hashing\+: Utilizes BCrypt to securely hash the user\textquotesingle{}s password.
+\item User insertion\+: Inserts the new user into the database with a unique tag.
+\item JWT token generation\+: Generates a JWT token for the newly registered user.
+\end{DoxyItemize}
+
+Exceptions\+:
+\begin{DoxyItemize}
+\item SQL exceptions are caught and logged, returning a 500 server error response.
+\item Standard exceptions are also caught and logged, returning a 500 server error response.
+\end{DoxyItemize}
+
+\begin{DoxyNote}{Note}
+Email ownership verification is mentioned as a necessary step but is not implemented in this function.
+\end{DoxyNote}
+Usage\+: This function should be called during the server setup phase to enable the "{}/register"{} endpoint for handling user registration requests. 

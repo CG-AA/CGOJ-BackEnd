@@ -1,0 +1,34 @@
+\doxysection{cache\+::lru\+\_\+cache\texorpdfstring{$<$}{<} key\+\_\+t, value\+\_\+t \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classcache_1_1lru__cache}{}\label{classcache_1_1lru__cache}\index{cache::lru\_cache$<$ key\_t, value\_t $>$@{cache::lru\_cache$<$ key\_t, value\_t $>$}}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classcache_1_1lru__cache_a8f8224d98265b4dcb5b77d04e4b9c80d}\label{classcache_1_1lru__cache_a8f8224d98265b4dcb5b77d04e4b9c80d} 
+typedef std\+::pair$<$ key\+\_\+t, value\+\_\+t $>$ {\bfseries key\+\_\+value\+\_\+pair\+\_\+t}
+\item 
+\Hypertarget{classcache_1_1lru__cache_a077345d780f2ef8ff22f1cd70738399e}\label{classcache_1_1lru__cache_a077345d780f2ef8ff22f1cd70738399e} 
+typedef std\+::list$<$ key\+\_\+value\+\_\+pair\+\_\+t $>$\+::iterator {\bfseries list\+\_\+iterator\+\_\+t}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{classcache_1_1lru__cache_a4092dfd55e1d8b61fc6b758da042ef3e}\label{classcache_1_1lru__cache_a4092dfd55e1d8b61fc6b758da042ef3e} 
+{\bfseries lru\+\_\+cache} (size\+\_\+t max\+\_\+size)
+\item 
+\Hypertarget{classcache_1_1lru__cache_a2896ead98f364f4ddf717ba9da246b71}\label{classcache_1_1lru__cache_a2896ead98f364f4ddf717ba9da246b71} 
+void {\bfseries put} (const key\+\_\+t \&key, const value\+\_\+t \&value)
+\item 
+\Hypertarget{classcache_1_1lru__cache_ab2010ac8c8419dc97dd5d56f7fa990c9}\label{classcache_1_1lru__cache_ab2010ac8c8419dc97dd5d56f7fa990c9} 
+const value\+\_\+t \& {\bfseries get} (const key\+\_\+t \&key)
+\item 
+\Hypertarget{classcache_1_1lru__cache_a106507772e50ec0172c7a3ea6b4f9dc3}\label{classcache_1_1lru__cache_a106507772e50ec0172c7a3ea6b4f9dc3} 
+bool {\bfseries exists} (const key\+\_\+t \&key) const
+\item 
+\Hypertarget{classcache_1_1lru__cache_a21fc582a828ca30c47b393d0c67baa2b}\label{classcache_1_1lru__cache_a21fc582a828ca30c47b393d0c67baa2b} 
+size\+\_\+t {\bfseries size} () const
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/include/\mbox{\hyperlink{lrucache_8hpp}{lrucache.\+hpp}}\end{DoxyCompactItemize}

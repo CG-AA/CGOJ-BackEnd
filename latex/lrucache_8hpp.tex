@@ -1,0 +1,57 @@
+\doxysection{src/include/lrucache.hpp File Reference}
+\hypertarget{lrucache_8hpp}{}\label{lrucache_8hpp}\index{src/include/lrucache.hpp@{src/include/lrucache.hpp}}
+
+
+Simple LRU (Least Recently Used) cache implementation.  
+
+
+{\ttfamily \#include $<$unordered\+\_\+map$>$}\newline
+{\ttfamily \#include $<$list$>$}\newline
+{\ttfamily \#include $<$cstddef$>$}\newline
+{\ttfamily \#include $<$stdexcept$>$}\newline
+{\ttfamily \#include $<$mutex$>$}\newline
+Include dependency graph for lrucache.\+hpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{lrucache_8hpp__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{lrucache_8hpp__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classcache_1_1lru__cache}{cache\+::lru\+\_\+cache$<$ key\+\_\+t, value\+\_\+t $>$}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Simple LRU (Least Recently Used) cache implementation. 
+
+This file contains the implementation of a simple LRU cache. The LRU cache is a data structure that holds a fixed number of key-\/value pairs. When the cache reaches its capacity and a new key-\/value pair needs to be inserted, the least recently used (LRU) key-\/value pair is evicted from the cache to make room for the new pair.
+
+This implementation uses a combination of a std\+::list and a std\+::unordered\+\_\+map to achieve O(1) time complexity for insert, delete, and access operations. The std\+::list is used to keep track of the order of elements (with the most recently used at the front), and the std\+::unordered\+\_\+map is used for fast lookup of elements in the list.
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em key\+\_\+t} & The type of the keys in the cache. \\
+\hline
+{\em value\+\_\+t} & The type of the values in the cache.\\
+\hline
+\end{DoxyTemplParams}
+Usage example\+:
+
+cache\+::lru\+\_\+cache$<$int, std\+::string$>$ my\+\_\+cache(5); // Create a cache for up to 5 key-\/value pairs my\+\_\+cache.\+put(1, "{}one"{}); // Insert a key-\/value pair into the cache try \{ std\+::string value = my\+\_\+cache.\+get(1); // Access a value by its key std\+::cout \texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<} value \texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<} std\+::endl; \} catch (const std\+::range\+\_\+error\& e) \{ std\+::cerr \texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<} e.\+what() \texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<} std\+::endl; \}
+
+\begin{DoxyAuthor}{Author}
+Alexander Ponomarev 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+June 20, 2013 
+\end{DoxyDate}

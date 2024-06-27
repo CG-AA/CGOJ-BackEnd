@@ -1,0 +1,102 @@
+\doxysection{src/\+Programs/jwt.hpp File Reference}
+\hypertarget{jwt_8hpp}{}\label{jwt_8hpp}\index{src/Programs/jwt.hpp@{src/Programs/jwt.hpp}}
+
+
+Header file for the JSON Web Token (JWT) functions.  
+
+
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$nlohmann/json.\+hpp$>$}\newline
+{\ttfamily \#include $<$jwt-\/cpp/jwt.\+h$>$}\newline
+{\ttfamily \#include "{}../\+API/api.\+hpp"{}}\newline
+Include dependency graph for jwt.\+hpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{jwt_8hpp__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{jwt_8hpp__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{jwt_8hpp_a42a51f163c4e990a99e3beb11f3c0029}{verify\+JWT}} (std\+::string jwt, nlohmann\+::json \&\mbox{\hyperlink{main_8cpp_a226e5c87ec0382336e0be64e07be3723}{settings}}, std\+::string BE\+\_\+\+IP)
+\item 
+nlohmann\+::json \mbox{\hyperlink{jwt_8hpp_a67af989245d9a88791f052e0b0f4ce94}{get\+Roles}} (std\+::string jwt)
+\item 
+std\+::string \mbox{\hyperlink{jwt_8hpp_a2c5042d1fe26a4c6e8c9b2d91ccf6dc8}{generate\+JWT}} (nlohmann\+::json \&\mbox{\hyperlink{main_8cpp_a226e5c87ec0382336e0be64e07be3723}{settings}}, std\+::string \mbox{\hyperlink{main_8cpp_a57430442c3d9a40c976af8e13ab34029}{IP}}, int user\+\_\+id, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classAPIs}{APIs}} $>$ \&sql\+API)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Header file for the JSON Web Token (JWT) functions. 
+
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{jwt_8hpp_a2c5042d1fe26a4c6e8c9b2d91ccf6dc8}\index{jwt.hpp@{jwt.hpp}!generateJWT@{generateJWT}}
+\index{generateJWT@{generateJWT}!jwt.hpp@{jwt.hpp}}
+\doxysubsubsection{\texorpdfstring{generateJWT()}{generateJWT()}}
+{\footnotesize\ttfamily \label{jwt_8hpp_a2c5042d1fe26a4c6e8c9b2d91ccf6dc8} 
+std\+::string generate\+JWT (\begin{DoxyParamCaption}\item[{nlohmann\+::json \&}]{settings}{, }\item[{std\+::string}]{IP}{, }\item[{int}]{user\+\_\+id}{, }\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classAPIs}{APIs}} $>$ \&}]{sql\+API}{}\end{DoxyParamCaption})}
+
+Generates a JSON Web Token (JWT) for the given user.
+
+
+\begin{DoxyParams}{Parameters}
+{\em settings} & The JSON object containing the JWT secret. \\
+\hline
+{\em BE\+\_\+\+IP} & The IP address of the backend server. \\
+\hline
+{\em user\+\_\+id} & The ID of the user. \\
+\hline
+{\em sqlapi} & A unique pointer to the \doxylink{classAPIs}{APIs} object for executing SQL queries. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The generated JWT as a string. 
+\end{DoxyReturn}
+\Hypertarget{jwt_8hpp_a67af989245d9a88791f052e0b0f4ce94}\index{jwt.hpp@{jwt.hpp}!getRoles@{getRoles}}
+\index{getRoles@{getRoles}!jwt.hpp@{jwt.hpp}}
+\doxysubsubsection{\texorpdfstring{getRoles()}{getRoles()}}
+{\footnotesize\ttfamily \label{jwt_8hpp_a67af989245d9a88791f052e0b0f4ce94} 
+nlohmann\+::json get\+Roles (\begin{DoxyParamCaption}\item[{std\+::string}]{jwt}{}\end{DoxyParamCaption})}
+
+Retrieves the roles from a JSON Web Token (JWT).
+
+
+\begin{DoxyParams}{Parameters}
+{\em jwt} & The JSON Web Token. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A JSON object containing the roles extracted from the JWT. 
+\end{DoxyReturn}
+\Hypertarget{jwt_8hpp_a42a51f163c4e990a99e3beb11f3c0029}\index{jwt.hpp@{jwt.hpp}!verifyJWT@{verifyJWT}}
+\index{verifyJWT@{verifyJWT}!jwt.hpp@{jwt.hpp}}
+\doxysubsubsection{\texorpdfstring{verifyJWT()}{verifyJWT()}}
+{\footnotesize\ttfamily \label{jwt_8hpp_a42a51f163c4e990a99e3beb11f3c0029} 
+void verify\+JWT (\begin{DoxyParamCaption}\item[{std\+::string}]{jwt}{, }\item[{nlohmann\+::json \&}]{settings}{, }\item[{std\+::string}]{BE\+\_\+\+IP}{}\end{DoxyParamCaption})}
+
+Verifies the authenticity of a JSON Web Token (JWT) using the provided settings and backend IP address.
+
+
+\begin{DoxyParams}{Parameters}
+{\em jwt} & The JWT to be verified. \\
+\hline
+{\em settings} & The JSON object containing the settings for JWT verification. \\
+\hline
+{\em BE\+\_\+\+IP} & The IP address of the backend server.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em std\+::runtime\+\_\+error} & if the JWT verification fails. \\
+\hline
+\end{DoxyExceptions}

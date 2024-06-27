@@ -1,6 +1,6 @@
 /**
  * @file main.cpp
- * @brief The main file for the CGFE server.
+ * @brief The main file for the CGBE.
  */
 
 #include <crow.h>
@@ -23,13 +23,20 @@
 
 #include "src/include/lrucache.hpp"
 
+/** Configuration settings for the application. */
 nlohmann::json settings;
+/** Pointer to the APIs class. */
 std::unique_ptr<APIs> api;
+/** The CROW application object. */
 crow::App<crow::CORSHandler> app;
+/** The IP address of the client. */
 std::string IP;
+/** Cache hit flag for problems_everyone_cache. */
 std::atomic<bool> problems_everyone_cache_hit{false};
 
+/** Cache for problems available to everyone */
 cache::lru_cache<int8_t, nlohmann::json> problems_everyone_cache(100);
+/** Cache for specific problem data */
 cache::lru_cache<int16_t, nlohmann::json> problem_cache(1000);
 
 /**

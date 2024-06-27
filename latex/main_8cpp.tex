@@ -1,0 +1,183 @@
+\doxysection{main.\+cpp File Reference}
+\hypertarget{main_8cpp}{}\label{main_8cpp}\index{main.cpp@{main.cpp}}
+
+
+The main file for the CGBE.  
+
+
+{\ttfamily \#include $<$crow.\+h$>$}\newline
+{\ttfamily \#include $<$crow/middlewares/cors.\+h$>$}\newline
+{\ttfamily \#include $<$nlohmann/json.\+hpp$>$}\newline
+{\ttfamily \#include $<$fstream$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include "{}src/\+API/api.\+hpp"{}}\newline
+{\ttfamily \#include "{}src/\+CROW\+\_\+\+ROUTEs/register.\+hpp"{}}\newline
+{\ttfamily \#include "{}src/\+CROW\+\_\+\+ROUTEs/login.\+hpp"{}}\newline
+{\ttfamily \#include "{}src/\+CROW\+\_\+\+ROUTEs/\+CORStest.\+hpp"{}}\newline
+{\ttfamily \#include "{}src/\+CROW\+\_\+\+ROUTEs/problems.\+hpp"{}}\newline
+{\ttfamily \#include "{}src/\+CROW\+\_\+\+ROUTEs/problem.\+hpp"{}}\newline
+{\ttfamily \#include "{}src/\+Programs/get\+\_\+ip.\+hpp"{}}\newline
+{\ttfamily \#include "{}src/include/lrucache.\+hpp"{}}\newline
+Include dependency graph for main.\+cpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{main_8cpp__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+nlohmann\+::json \mbox{\hyperlink{main_8cpp_a152665ad2531a57bd27e9cc9cd9190bc}{load\+Settings}} (const std\+::string \&default\+Settings\+File, const std\+::string \&local\+Settings\+File)
+\begin{DoxyCompactList}\small\item\em Loads the settings from the default settings file and the local settings file. \end{DoxyCompactList}\item 
+auto \mbox{\hyperlink{main_8cpp_af715d48258e1879890e103608f2fde53}{setup\+APIs}} (const nlohmann\+::json \&\mbox{\hyperlink{main_8cpp_a226e5c87ec0382336e0be64e07be3723}{settings}})
+\begin{DoxyCompactList}\small\item\em Creates and initializes an instance of \doxylink{classAPIs}{APIs} based on the provided settings. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a71b7bfab6537f3e9ebc94acf37cea6c0}{setup\+CORS}} ()
+\item 
+void \mbox{\hyperlink{main_8cpp_a553ce9cca044d40931e5cbe9deb407e4}{setup\+Routes}} ()
+\item 
+int \mbox{\hyperlink{main_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4}{main}} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+nlohmann\+::json \mbox{\hyperlink{main_8cpp_a226e5c87ec0382336e0be64e07be3723}{settings}}
+\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classAPIs}{APIs}} $>$ \mbox{\hyperlink{main_8cpp_ab8701c10295234ac200a898c50dbbc76}{api}}
+\item 
+crow\+::\+App$<$ crow\+::\+CORSHandler $>$ \mbox{\hyperlink{main_8cpp_afce6e82e7f4ddd54d9bbf8894ccc85ab}{app}}
+\item 
+std\+::string \mbox{\hyperlink{main_8cpp_a57430442c3d9a40c976af8e13ab34029}{IP}}
+\item 
+std\+::atomic$<$ bool $>$ \mbox{\hyperlink{main_8cpp_afa2dc980a43447849a3f06722980a126}{problems\+\_\+everyone\+\_\+cache\+\_\+hit}} \{false\}
+\item 
+\mbox{\hyperlink{classcache_1_1lru__cache}{cache\+::lru\+\_\+cache}}$<$ int8\+\_\+t, nlohmann\+::json $>$ \mbox{\hyperlink{main_8cpp_a70942e25e0034f5fb506d5843198ade3}{problems\+\_\+everyone\+\_\+cache}} (100)
+\item 
+\mbox{\hyperlink{classcache_1_1lru__cache}{cache\+::lru\+\_\+cache}}$<$ int16\+\_\+t, nlohmann\+::json $>$ \mbox{\hyperlink{main_8cpp_a37ddc4a90958ea5da51292255df72b4d}{problem\+\_\+cache}} (1000)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The main file for the CGBE. 
+
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{main_8cpp_a152665ad2531a57bd27e9cc9cd9190bc}\index{main.cpp@{main.cpp}!loadSettings@{loadSettings}}
+\index{loadSettings@{loadSettings}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{loadSettings()}{loadSettings()}}
+{\footnotesize\ttfamily \label{main_8cpp_a152665ad2531a57bd27e9cc9cd9190bc} 
+nlohmann\+::json load\+Settings (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{default\+Settings\+File}{, }\item[{const std\+::string \&}]{local\+Settings\+File}{}\end{DoxyParamCaption})}
+
+
+
+Loads the settings from the default settings file and the local settings file. 
+
+This function reads the JSON data from the default settings file and the local settings file, merges them together, and returns the resulting JSON object.
+
+
+\begin{DoxyParams}{Parameters}
+{\em default\+Settings\+File} & The path to the default settings file. \\
+\hline
+{\em local\+Settings\+File} & The path to the local settings file. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The merged JSON object containing the settings. 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em std\+::ifstream\+::failure} & if there is an error opening or reading the settings files. \\
+\hline
+{\em nlohmann\+::json\+::parse\+\_\+error} & if there is an error parsing the JSON data. \\
+\hline
+\end{DoxyExceptions}
+\Hypertarget{main_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4}\index{main.cpp@{main.cpp}!main@{main}}
+\index{main@{main}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily \label{main_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4} 
+int main (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+The main function of the program. It initializes the IP address, loads settings, sets up CORS, sets up routes, sets up \doxylink{classAPIs}{APIs}, and runs the application.
+
+\begin{DoxyReturn}{Returns}
+0 indicating successful execution of the program. 
+\end{DoxyReturn}
+\Hypertarget{main_8cpp_af715d48258e1879890e103608f2fde53}\index{main.cpp@{main.cpp}!setupAPIs@{setupAPIs}}
+\index{setupAPIs@{setupAPIs}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{setupAPIs()}{setupAPIs()}}
+{\footnotesize\ttfamily \label{main_8cpp_af715d48258e1879890e103608f2fde53} 
+auto setup\+APIs (\begin{DoxyParamCaption}\item[{const nlohmann\+::json \&}]{settings}{}\end{DoxyParamCaption})}
+
+
+
+Creates and initializes an instance of \doxylink{classAPIs}{APIs} based on the provided settings. 
+
+This function takes a JSON object containing settings for My\+SQL database connection and creates an instance of \doxylink{classAPIs}{APIs} class. The settings should include the host, user, password, database, and port information for the My\+SQL connection.
+
+
+\begin{DoxyParams}{Parameters}
+{\em settings} & The JSON object containing the My\+SQL connection settings. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A unique pointer to the created \doxylink{classAPIs}{APIs} instance. 
+\end{DoxyReturn}
+\Hypertarget{main_8cpp_a71b7bfab6537f3e9ebc94acf37cea6c0}\index{main.cpp@{main.cpp}!setupCORS@{setupCORS}}
+\index{setupCORS@{setupCORS}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{setupCORS()}{setupCORS()}}
+{\footnotesize\ttfamily \label{main_8cpp_a71b7bfab6537f3e9ebc94acf37cea6c0} 
+void setup\+CORS (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+Sets up Cross-\/\+Origin Resource Sharing (CORS) for the application. This function configures the CORS middleware to allow specified headers, methods, and origins. It is used to enable cross-\/origin requests from the client-\/side to the server-\/side. \Hypertarget{main_8cpp_a553ce9cca044d40931e5cbe9deb407e4}\index{main.cpp@{main.cpp}!setupRoutes@{setupRoutes}}
+\index{setupRoutes@{setupRoutes}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{setupRoutes()}{setupRoutes()}}
+{\footnotesize\ttfamily \label{main_8cpp_a553ce9cca044d40931e5cbe9deb407e4} 
+void setup\+Routes (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+Sets up the routes for the application. This function registers various routes for handling different requests. 
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{main_8cpp_ab8701c10295234ac200a898c50dbbc76}\index{main.cpp@{main.cpp}!api@{api}}
+\index{api@{api}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{api}{api}}
+{\footnotesize\ttfamily \label{main_8cpp_ab8701c10295234ac200a898c50dbbc76} 
+std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{classAPIs}{APIs}}$>$ api}
+
+Pointer to the \doxylink{classAPIs}{APIs} class. \Hypertarget{main_8cpp_afce6e82e7f4ddd54d9bbf8894ccc85ab}\index{main.cpp@{main.cpp}!app@{app}}
+\index{app@{app}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{app}{app}}
+{\footnotesize\ttfamily \label{main_8cpp_afce6e82e7f4ddd54d9bbf8894ccc85ab} 
+crow\+::\+App$<$crow\+::\+CORSHandler$>$ app}
+
+The CROW application object. \Hypertarget{main_8cpp_a57430442c3d9a40c976af8e13ab34029}\index{main.cpp@{main.cpp}!IP@{IP}}
+\index{IP@{IP}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{IP}{IP}}
+{\footnotesize\ttfamily \label{main_8cpp_a57430442c3d9a40c976af8e13ab34029} 
+std\+::string IP}
+
+The IP address of the client. \Hypertarget{main_8cpp_a37ddc4a90958ea5da51292255df72b4d}\index{main.cpp@{main.cpp}!problem\_cache@{problem\_cache}}
+\index{problem\_cache@{problem\_cache}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{problem\_cache}{problem\_cache}}
+{\footnotesize\ttfamily \label{main_8cpp_a37ddc4a90958ea5da51292255df72b4d} 
+\mbox{\hyperlink{classcache_1_1lru__cache}{cache\+::lru\+\_\+cache}}$<$ int16\+\_\+t, nlohmann\+::json $>$ problem\+\_\+cache(1000) (\begin{DoxyParamCaption}\item[{1000}]{}{}\end{DoxyParamCaption})}
+
+Cache for specific problem data \Hypertarget{main_8cpp_a70942e25e0034f5fb506d5843198ade3}\index{main.cpp@{main.cpp}!problems\_everyone\_cache@{problems\_everyone\_cache}}
+\index{problems\_everyone\_cache@{problems\_everyone\_cache}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{problems\_everyone\_cache}{problems\_everyone\_cache}}
+{\footnotesize\ttfamily \label{main_8cpp_a70942e25e0034f5fb506d5843198ade3} 
+\mbox{\hyperlink{classcache_1_1lru__cache}{cache\+::lru\+\_\+cache}}$<$ int8\+\_\+t, nlohmann\+::json $>$ problems\+\_\+everyone\+\_\+cache(100) (\begin{DoxyParamCaption}\item[{100}]{}{}\end{DoxyParamCaption})}
+
+Cache for problems available to everyone \Hypertarget{main_8cpp_afa2dc980a43447849a3f06722980a126}\index{main.cpp@{main.cpp}!problems\_everyone\_cache\_hit@{problems\_everyone\_cache\_hit}}
+\index{problems\_everyone\_cache\_hit@{problems\_everyone\_cache\_hit}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{problems\_everyone\_cache\_hit}{problems\_everyone\_cache\_hit}}
+{\footnotesize\ttfamily \label{main_8cpp_afa2dc980a43447849a3f06722980a126} 
+std\+::atomic$<$bool$>$ problems\+\_\+everyone\+\_\+cache\+\_\+hit \{false\}}
+
+Cache hit flag for problems\+\_\+everyone\+\_\+cache. \Hypertarget{main_8cpp_a226e5c87ec0382336e0be64e07be3723}\index{main.cpp@{main.cpp}!settings@{settings}}
+\index{settings@{settings}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{settings}{settings}}
+{\footnotesize\ttfamily \label{main_8cpp_a226e5c87ec0382336e0be64e07be3723} 
+nlohmann\+::json settings}
+
+Configuration settings for the application. 

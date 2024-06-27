@@ -1,0 +1,56 @@
+\doxysection{src/\+CROW\+\_\+\+ROUTEs/login.cpp File Reference}
+\hypertarget{login_8cpp}{}\label{login_8cpp}\index{src/CROW\_ROUTEs/login.cpp@{src/CROW\_ROUTEs/login.cpp}}
+
+
+Implementation of the login route.  
+
+
+{\ttfamily \#include "{}login.\+hpp"{}}\newline
+{\ttfamily \#include $<$bcrypt/\+BCrypt.\+hpp$>$}\newline
+{\ttfamily \#include "{}../\+Programs/jwt.\+hpp"{}}\newline
+Include dependency graph for login.\+cpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{login_8cpp__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{login_8cpp_a00f361d5fb17810dec7d8826a2496d2b}{ROUTE\+\_\+\+Login}} (crow\+::\+App$<$ crow\+::\+CORSHandler $>$ \&\mbox{\hyperlink{main_8cpp_afce6e82e7f4ddd54d9bbf8894ccc85ab}{app}}, nlohmann\+::json \&\mbox{\hyperlink{main_8cpp_a226e5c87ec0382336e0be64e07be3723}{settings}}, std\+::string \mbox{\hyperlink{main_8cpp_a57430442c3d9a40c976af8e13ab34029}{IP}}, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classAPIs}{APIs}} $>$ \&sql\+API)
+\begin{DoxyCompactList}\small\item\em Implements the login functionality as a POST route using the CROW library. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implementation of the login route. 
+
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{login_8cpp_a00f361d5fb17810dec7d8826a2496d2b}\index{login.cpp@{login.cpp}!ROUTE\_Login@{ROUTE\_Login}}
+\index{ROUTE\_Login@{ROUTE\_Login}!login.cpp@{login.cpp}}
+\doxysubsubsection{\texorpdfstring{ROUTE\_Login()}{ROUTE\_Login()}}
+{\footnotesize\ttfamily \label{login_8cpp_a00f361d5fb17810dec7d8826a2496d2b} 
+void ROUTE\+\_\+\+Login (\begin{DoxyParamCaption}\item[{crow\+::\+App$<$ crow\+::\+CORSHandler $>$ \&}]{app}{, }\item[{nlohmann\+::json \&}]{settings}{, }\item[{std\+::string}]{IP}{, }\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classAPIs}{APIs}} $>$ \&}]{sql\+API}{}\end{DoxyParamCaption})}
+
+
+
+Implements the login functionality as a POST route using the CROW library. 
+
+This function sets up a POST route at "{}/login"{} for user authentication. It expects a JSON payload in the request body containing the user\textquotesingle{}s email and password. The function then queries the database for a user with the provided email. If a user is found, it validates the password using BCrypt. Upon successful validation, it generates a JSON Web Token (JWT) using the user\textquotesingle{}s ID, the application settings, and the server IP address. The JWT is then returned to the client. If the email or password is invalid, it returns an error message.
+
+
+\begin{DoxyParams}{Parameters}
+{\em app} & The CROW application object used to define the route. \\
+\hline
+{\em settings} & A JSON object containing the application settings, including permissions. \\
+\hline
+{\em IP} & The IP address of the backend server. \\
+\hline
+{\em sql\+API} & A pointer to the SQL API object for database operations.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+The route is defined to listen for POST requests only. 
+\end{DoxyNote}

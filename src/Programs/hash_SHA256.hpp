@@ -1,4 +1,9 @@
+/**
+ * @file hash_SHA256.hpp
+ * @brief Header file for the SHA256 hash function.
+ */
 #include <string>
+
 
 /**
  * Calculates the SHA256 hash of a given string.
