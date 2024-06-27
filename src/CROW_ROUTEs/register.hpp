@@ -29,7 +29,7 @@ namespace { // Anonymous namespace to limit scope to this file
 class IPrateLimit {
 public:
     std::array<std::string, 3> emails;
-    IPrateLimit(std::string email = "");
+    IPrateLimit(std::string email);
 };
 }
 
