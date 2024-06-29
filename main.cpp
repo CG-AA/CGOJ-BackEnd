@@ -45,15 +45,15 @@ cache::lru_cache<int16_t, nlohmann::json> problem_cache(1000);
  * merges them together, and returns the resulting JSON object.
  * 
  * @param defaultSettingsFile The path to the default settings file.
- * @param localSettingsFile The path to the local settings file.
+ * @param localSettingsFileName The path to the local settings file.
  * @return The merged JSON object containing the settings.
  * @throws std::ifstream::failure if there is an error opening or reading the settings files.
  * @throws nlohmann::json::parse_error if there is an error parsing the JSON data.
  */
-nlohmann::json loadSettings(const std::string& defaultSettingsFile, const std::string& localSettingsFile) {
+nlohmann::json loadSettings(const std::string& defaultSettingsFileName, const std::string& localSettingsFileName) {
     // Load settings from the default file
     nlohmann::json defaultSettings;
-    std::ifstream defaultFile(defaultSettingsFile);
+    std::ifstream defaultFile(defaultSettingsFileName);
     try {
         defaultFile >> defaultSettings;
     } catch (nlohmann::json::parse_error& e) {
@@ -62,7 +62,7 @@ nlohmann::json loadSettings(const std::string& defaultSettingsFile, const std::s
     }
 
     // Load settings from the .local file
-    std::ifstream localFile(localSettingsFile);
+    std::ifstream localFile(localSettingsFileName);
     nlohmann::json localSettings;
     if (localFile.good()) { // Check if the .local file exists
         try {
