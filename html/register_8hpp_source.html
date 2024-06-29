@@ -103,7 +103,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">class </span>IPrateLimit {</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">public</span>:</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    std::array&lt;std::string, 3&gt; emails;</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    IPrateLimit(std::string email = <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    IPrateLimit(std::string email);</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>};</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
@@ -123,10 +123,10 @@ $(function(){ initResizable(false); });
 <div class="ttc" id="aapi_8hpp_html"><div class="ttname"><a href="api_8hpp.html">api.hpp</a></div><div class="ttdoc">Header file for the APIs class.</div></div>
 <div class="ttc" id="aclassRateLimit_html"><div class="ttname"><a href="classRateLimit.html">RateLimit</a></div><div class="ttdoc">Rate limiting for registration.</div><div class="ttdef"><b>Definition</b> register.hpp:42</div></div>
 <div class="ttc" id="aclassRateLimit_html_aeb4c50f3ad18523c8c76f12a17fd543b"><div class="ttname"><a href="classRateLimit.html#aeb4c50f3ad18523c8c76f12a17fd543b">RateLimit::check_rate_limit</a></div><div class="ttdeci">bool check_rate_limit(std::string ip, std::string email)</div><div class="ttdoc">if a given IP address and email combination is within the rate limit.</div><div class="ttdef"><b>Definition</b> register.cpp:27</div></div>
-<div class="ttc" id="amain_8cpp_html_a226e5c87ec0382336e0be64e07be3723"><div class="ttname"><a href="main_8cpp.html#a226e5c87ec0382336e0be64e07be3723">settings</a></div><div class="ttdeci">nlohmann::json settings</div><div class="ttdef"><b>Definition</b> main.cpp:27</div></div>
-<div class="ttc" id="amain_8cpp_html_a57430442c3d9a40c976af8e13ab34029"><div class="ttname"><a href="main_8cpp.html#a57430442c3d9a40c976af8e13ab34029">IP</a></div><div class="ttdeci">std::string IP</div><div class="ttdef"><b>Definition</b> main.cpp:33</div></div>
-<div class="ttc" id="amain_8cpp_html_ab8701c10295234ac200a898c50dbbc76"><div class="ttname"><a href="main_8cpp.html#ab8701c10295234ac200a898c50dbbc76">api</a></div><div class="ttdeci">std::unique_ptr&lt; APIs &gt; api</div><div class="ttdef"><b>Definition</b> main.cpp:29</div></div>
-<div class="ttc" id="amain_8cpp_html_afce6e82e7f4ddd54d9bbf8894ccc85ab"><div class="ttname"><a href="main_8cpp.html#afce6e82e7f4ddd54d9bbf8894ccc85ab">app</a></div><div class="ttdeci">crow::App&lt; crow::CORSHandler &gt; app</div><div class="ttdef"><b>Definition</b> main.cpp:31</div></div>
+<div class="ttc" id="amain_8cpp_html_a226e5c87ec0382336e0be64e07be3723"><div class="ttname"><a href="main_8cpp.html#a226e5c87ec0382336e0be64e07be3723">settings</a></div><div class="ttdeci">nlohmann::json settings</div><div class="ttdef"><b>Definition</b> main.cpp:26</div></div>
+<div class="ttc" id="amain_8cpp_html_a57430442c3d9a40c976af8e13ab34029"><div class="ttname"><a href="main_8cpp.html#a57430442c3d9a40c976af8e13ab34029">IP</a></div><div class="ttdeci">std::string IP</div><div class="ttdef"><b>Definition</b> main.cpp:32</div></div>
+<div class="ttc" id="amain_8cpp_html_ab8701c10295234ac200a898c50dbbc76"><div class="ttname"><a href="main_8cpp.html#ab8701c10295234ac200a898c50dbbc76">api</a></div><div class="ttdeci">std::unique_ptr&lt; APIs &gt; api</div><div class="ttdef"><b>Definition</b> main.cpp:28</div></div>
+<div class="ttc" id="amain_8cpp_html_afce6e82e7f4ddd54d9bbf8894ccc85ab"><div class="ttname"><a href="main_8cpp.html#afce6e82e7f4ddd54d9bbf8894ccc85ab">app</a></div><div class="ttdeci">crow::App&lt; crow::CORSHandler &gt; app</div><div class="ttdef"><b>Definition</b> main.cpp:30</div></div>
 <div class="ttc" id="aregister_8hpp_html_ac0f8312d3b5e9958ea002d76ee814223"><div class="ttname"><a href="register_8hpp.html#ac0f8312d3b5e9958ea002d76ee814223">ROUTE_Register</a></div><div class="ttdeci">void ROUTE_Register(crow::App&lt; crow::CORSHandler &gt; &amp;app, nlohmann::json &amp;settings, std::string IP, std::unique_ptr&lt; APIs &gt; &amp;api)</div><div class="ttdoc">Handles the user registration process.</div><div class="ttdef"><b>Definition</b> register.cpp:50</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
