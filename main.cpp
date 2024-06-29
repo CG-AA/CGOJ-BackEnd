@@ -113,7 +113,7 @@ auto setupAPIs(const nlohmann::json& settings) {
 // }
 
 /**
- * Sets up Cross-Origin Resource Sharing (CORS) for the application.
+ * @brief Sets up Cross-Origin Resource Sharing (CORS) for the application.
  * This function configures the CORS middleware to allow specified headers, methods, and origins.
  * It is used to enable cross-origin requests from the client-side to the server-side.
  */
@@ -130,7 +130,7 @@ void setupCORS() {
 }
 
 /**
- * Sets up the routes for the application.
+ * @brief Sets up the routes for the application.
  * This function registers various routes for handling different requests.
  */
 void setupRoutes() {
@@ -144,8 +144,6 @@ void setupRoutes() {
  * The main function of the program.
  * It initializes the IP address, loads settings, sets up CORS, sets up routes,
  * sets up APIs, and runs the application.
- * 
- * @return 0 indicating successful execution of the program.
  */
 int main()
 {
