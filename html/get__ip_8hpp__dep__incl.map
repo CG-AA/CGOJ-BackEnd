@@ -1,7 +1,0 @@
-<map id="src/Programs/get_ip.hpp" name="src/Programs/get_ip.hpp">
-<area shape="rect" id="Node000001" title="Functions for retrieving the public IP address." alt="" coords="35,5,213,31"/>
-<area shape="rect" id="Node000002" href="$main_8cpp.html" title="The main file for the CGBE." alt="" coords="5,79,88,104"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="103,42,61,80,58,76,100,38"/>
-<area shape="rect" id="Node000003" href="$get__ip_8cpp.html" title="Implementation file for the get_ip function." alt="" coords="112,79,291,104"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="148,38,190,76,187,80,145,42"/>
-</map>

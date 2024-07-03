@@ -1,9 +1,0 @@
-<map id="src/CROW_ROUTEs/problems.hpp" name="src/CROW_ROUTEs/problems.hpp">
-<area shape="rect" id="Node000001" title="Declaration of the problems route." alt="" coords="109,5,347,31"/>
-<area shape="rect" id="Node000002" href="$main_8cpp.html" title="The main file for the CGBE." alt="" coords="5,79,88,104"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="187,38,77,81,75,76,185,33"/>
-<area shape="rect" id="Node000003" href="$problem_8cpp.html" title="Implementation of the problem route." alt="" coords="113,79,343,104"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="231,44,231,79,225,79,225,44"/>
-<area shape="rect" id="Node000004" href="$problems_8cpp.html" title="Implementation of the problems route." alt="" coords="368,79,605,104"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="283,32,445,76,444,81,282,37"/>
-</map>

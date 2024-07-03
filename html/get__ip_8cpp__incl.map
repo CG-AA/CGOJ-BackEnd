@@ -1,9 +1,0 @@
-<map id="src/Programs/get_ip.cpp" name="src/Programs/get_ip.cpp">
-<area shape="rect" id="Node000001" title="Implementation file for the get_ip function." alt="" coords="17,5,196,31"/>
-<area shape="rect" id="Node000002" href="$get__ip_8hpp.html" title="Functions for retrieving the public IP address." alt="" coords="5,79,96,104"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="100,33,70,69,66,66,95,29"/>
-<area shape="rect" id="Node000004" title=" " alt="" coords="121,79,207,104"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="118,29,148,66,144,70,114,33"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="21,152,80,177"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="53,104,53,138,48,138,48,104"/>
-</map>
