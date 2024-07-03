@@ -37,7 +37,6 @@ void ROUTE_problem(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, 
             verifyJWT(jwt, settings, IP);
             roles = getRoles(jwt);
         } catch (const std::exception& e) {
-            return crow::response(401, e.what());
         }
         nlohmann::json problem;
         bool cache_hit = problem_cache.exists(problemId);
@@ -118,8 +117,9 @@ void ROUTE_problem(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, 
                     }
                     problem["solutions"] = solutions;
                 }
-                
-                problem_cache.put(problemId, problem);
+                if(roles.size() == 1 && roles[0] == "everyone"){
+                    problem_cache.put(problemId, problem);
+                }
                 return crow::response(200, problem);
             } else {
                 return crow::response(404, "Problem not found");
