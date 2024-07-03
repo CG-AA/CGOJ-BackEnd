@@ -14,10 +14,11 @@ void ROUTE_problems(crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
         nlohmann::json roles;
         try {
             std::string jwt = req.get_header_value("Authorization");
-            verifyJWT(jwt, settings, IP);
-            roles = getRoles(jwt);
+            if (jwt != "null") {
+                verifyJWT(jwt, settings, IP);
+                roles = getRoles(jwt);
+            }
         } catch (const std::exception& e) {
-            return crow::response(401, e.what());
         }
         // Handle page query parameter
         int page = 1, problemsPerPage = 10;
@@ -59,6 +60,9 @@ void ROUTE_problems(crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
             std::unique_ptr<sql::PreparedStatement> pstmt = API->prepareStatement(query);
             pstmt->setString(1, "everyone");
             std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+            if(res->rowsCount() == 0){
+                return crow::response(404, "No problems found");
+            }
             while (res->next()) {
                 nlohmann::json problem;
                 problem["id"] = res->getInt("id");

@@ -31,11 +31,13 @@ void ROUTE_problem(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, 
     CROW_ROUTE(app, "/problem/<int>")
     .methods("GET"_method)
     ([&settings, IP, &sqlAPI, &problem_cache](const crow::request& req, int problemId){
-        nlohmann::json roles;
+        nlohmann::json roles = nlohmann::json::array();
         try {
             std::string jwt = req.get_header_value("Authorization");
-            verifyJWT(jwt, settings, IP);
-            roles = getRoles(jwt);
+            if (jwt != "null") {
+                verifyJWT(jwt, settings, IP);
+                roles = getRoles(jwt);
+            }
         } catch (const std::exception& e) {
         }
         nlohmann::json problem;
