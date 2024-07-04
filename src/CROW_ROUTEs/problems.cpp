@@ -43,7 +43,6 @@ void ROUTE_problems(crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
         nlohmann::json roles;
         try {
             std::string jwt = req.get_header_value("Authorization");
-            CROW_LOG_INFO << "JWT: " << jwt;
             if (jwt != "null") {
                 verifyJWT(jwt, settings, IP);
                 roles = getRoles(jwt);
@@ -62,11 +61,13 @@ void ROUTE_problems(crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
 
         nlohmann::json problems;
 
-        if (roles.size() || offset+problemsPerPage > 30) {
+        if (roles.size() || (offset+problemsPerPage > problems_everyone_cache.size() && problems_everyone_cache_hit)) {
             problems = getProblems(API, roles, problemsPerPage, offset);
         } else if(!problems_everyone_cache_hit) {
             problems = getProblems(API, {"everyone"}, problemsPerPage, offset);
-            if(!problems.empty())   problems_everyone_cache_hit = true;
+            if(!problems.empty()) {
+                problems_everyone_cache_hit = true;
+            }
         } else {
             for (int i = offset; i < offset + problemsPerPage; i++) {
                 problems.push_back(problems_everyone_cache.get(i));
@@ -77,7 +78,7 @@ void ROUTE_problems(crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
         if (problems.size() == 0) {
             return crow::response(204, "No problems found.");
         } else {
-            return crow::response(200, problems);
+            return crow::response(200, problems.dump());
         }
     });
 }
