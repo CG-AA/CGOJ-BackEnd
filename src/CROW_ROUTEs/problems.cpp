@@ -43,6 +43,7 @@ void ROUTE_problems(crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
         nlohmann::json roles;
         try {
             std::string jwt = req.get_header_value("Authorization");
+            CROW_LOG_INFO << "JWT: " << jwt;
             if (jwt != "null") {
                 verifyJWT(jwt, settings, IP);
                 roles = getRoles(jwt);
@@ -72,7 +73,7 @@ void ROUTE_problems(crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
             }
         }
 
-
+        CROW_LOG_INFO << "Problems: " << problems.dump();
         if (problems.size() == 0) {
             return crow::response(204, "No problems found.");
         } else {
