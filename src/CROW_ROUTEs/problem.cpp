@@ -17,10 +17,10 @@ bool have_permisson(int user_permission, std::string permission_name, nlohmann::
     }
 }
 
-bool view_solutions_permission(nlohmann::json& settings, nlohmann::json& roles, nlohmann::json& problem){
-    for(auto i : problem["roles"]){
-        if(have_permisson(i.begin().value(), "view_solutions", settings) && roles.contains(i.begin().key())){
-            return true;
+bool have_permission(nlohmann::json& settings, nlohmann::json& user_roles, nlohmann::json& problem_roles, std::string permission_name){
+    for(auto i : problem_roles){
+        try{
+        int index = settings["permission_flags"]["problems"][permission_name];
         }
     }
     return false;
@@ -185,10 +185,6 @@ nlohmann::json get_problem_roles(std::unique_ptr<APIs>& sqlAPI, int problemId) {
 }
 } // namespace
 
-
-
-
-
 void ROUTE_problem(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& sqlAPI, cache::lru_cache<int16_t, nlohmann::json>& problem_cache){
     CROW_ROUTE(app, "/problem/<int>")
     .methods("GET"_method)
@@ -209,7 +205,7 @@ void ROUTE_problem(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, 
                 problem.erase("solutions");
             return crow::response(200, problem_cache.get(problemId));
         }
-
+        nlohmann::json problem;
 
     });
 }
