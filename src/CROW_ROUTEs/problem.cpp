@@ -9,18 +9,21 @@
 #include <set>
 
 namespace{
-
+// returns true if the user has the permission to access
 bool have_permission(nlohmann::json& settings, std::string permission_name, const nlohmann::json& user_roles, const nlohmann::json& problem_roles){
     std::set<std::string> roles_set;
-    for (auto& role : user_roles.items()) {
-        roles_set.insert(role.key());
-    }
-
-    for(auto& i : problem_roles) {
-        if(i["permission_flags"].get<int>() & (1 << settings["permissions"][permission_name].get<int>())){
-            if(roles_set.find(i["name"].get<std::string>()) != roles_set.end())
-                return true;
+    try {
+        for (auto& role : user_roles.items()) {
+            roles_set.insert(role.key());
         }
+
+        for(auto& i : problem_roles) {
+            if(i["permission_flags"].get<int>() & (1 << settings["permissions"][permission_name].get<int>())){
+                if(roles_set.find(i["name"].get<std::string>()) != roles_set.end())
+                    return true;
+            }
+        }
+    } catch (const std::exception& e) {
     }
     return false;
 }
