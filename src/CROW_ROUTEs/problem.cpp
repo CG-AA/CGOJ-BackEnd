@@ -6,6 +6,7 @@
 #include "../Programs/jwt.hpp"
 
 #include <jwt-cpp/jwt.h>
+#include <set>
 
 namespace{
 
@@ -196,14 +197,25 @@ void ROUTE_problem(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, 
             }
         } catch (const std::exception& e) {
         }
+        nlohmann::json problem_roles;
+        problem_roles = get_problem_roles(sqlAPI, problemId);
         //do a cache hit
         if(problem_cache.exists(problemId)){
             nlohmann::json problem = problem_cache.get(problemId);
-            if(!view_solutions_permission(settings, roles, problem))
+            if(!have_permission(settings, "view_solutions", roles, problem_roles))
                 problem.erase("solutions");
             return crow::response(200, problem_cache.get(problemId));
         }
         nlohmann::json problem;
-
+        try {
+            problem = get_problem(sqlAPI, problemId);
+            problem["sample_io"] = get_problem_sample_IO(sqlAPI, problemId);
+            problem["tags"] = get_problem_tags(sqlAPI, problemId);
+            problem["hints"] = get_problem_hints(sqlAPI, problemId);
+            if(have_permission(settings, "view_solutions", roles, problem_roles))
+                problem["solutions"] = get_problem_solution(sqlAPI, problemId);
+        } catch (const std::exception& e) {
+            return crow::response(404, e.what());
+        }
     });
 }
