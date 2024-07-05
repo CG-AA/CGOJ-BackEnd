@@ -125,6 +125,64 @@ nlohmann::json get_problem_hints(std::unique_ptr<APIs>& sqlAPI, int problemId) {
     }
     return hints;
 }
+
+nlohmann::json get_problem_submissions(std::unique_ptr<APIs>& sqlAPI, int problemId) {
+    std::string query = "SELECT * FROM problem_submissions WHERE problem_id = ? ORDER BY submission_time DESC;";
+    std::unique_ptr<sql::PreparedStatement> pstmt(sqlAPI->prepareStatement(query));
+    pstmt->setInt(1, problemId);
+    std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+    nlohmann::json submissions = nlohmann::json::array();
+    while (res->next()) {
+        nlohmann::json submission;
+        submission["id"] = res->getInt("id");
+        submission["user_id"] = res->getInt("user_id");
+        submission["submission_time"] = res->getString("submission_time");
+        submission["code"] = res->getString("code");
+        submission["status"] = res->getString("status");
+        submission["time_taken"] = res->getInt("time_taken");
+        submission["memory_taken"] = res->getInt("memory_taken");
+        submission["language"] = res->getString("language");
+        submissions.push_back(submission);
+    }
+    return submissions;
+}
+
+nlohmann::json get_problem_submissions_subtasks(std::unique_ptr<APIs>& sqlAPI, int submissionId) {
+    std::string query = "SELECT * FROM problem_submissions_subtasks WHERE submission_id = ?;";
+    std::unique_ptr<sql::PreparedStatement> pstmt(sqlAPI->prepareStatement(query));
+    pstmt->setInt(1, submissionId);
+    std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+    nlohmann::json subtasks = nlohmann::json::array();
+    while (res->next()) {
+        nlohmann::json subtask;
+        subtask["submission_id"] = res->getInt("submission_id");
+        subtask["id"] = res->getInt("id");
+        subtask["status"] = res->getString("status");
+        subtask["time_taken"] = res->getInt("time_taken");
+        subtask["memory_taken"] = res->getInt("memory_taken");
+        subtasks.push_back(subtask);
+    }
+    return subtasks;
+}
+
+nlohmann::json get_problem_roles(std::unique_ptr<APIs>& sqlAPI, int problemId) {
+    std::string query = "SELECT rp.name, rp.color, pr.permission_flags "
+                        "FROM problem_role pr "
+                        "JOIN roles_problem rp ON pr.role_name = rp.name "
+                        "WHERE pr.problem_id = ?;";
+    std::unique_ptr<sql::PreparedStatement> pstmt(sqlAPI->prepareStatement(query));
+    pstmt->setInt(1, problemId);
+    std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+    nlohmann::json roles = nlohmann::json::array();
+    while (res->next()) {
+        nlohmann::json role;
+        role["name"] = res->getString("name");
+        role["color"] = res->getString("color");
+        role["permission_flags"] = res->getInt("permission_flags");
+        roles.push_back(role);
+    }
+    return roles;
+}
 } // namespace
 
 
