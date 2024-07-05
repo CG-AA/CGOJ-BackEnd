@@ -46,8 +46,35 @@ nlohmann::json get_problem(std::unique_ptr<APIs>& sqlAPI, int problemId) {
     }
 }
 
-nlohmann::json get_problem_details(std::unique_ptr<APIs>& sqlAPI, int problemId) {
+nlohmann::json get_problem_sample_IO(std::unique_ptr<APIs>& sqlAPI, int problemId) {
+    std::string query = "SELECT * FROM problem_sample_IO WHERE problem_id = ?;";
+    std::unique_ptr<sql::PreparedStatement> pstmt(sqlAPI->prepareStatement(query));
+    pstmt->setInt(1, problemId);
+    std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+    nlohmann::json sample_io = nlohmann::json::array();
+    while (res->next()) {
+        nlohmann::json io;
+        io["input"] = res->getString("input");
+        io["output"] = res->getString("output");
+        sample_io.push_back(io);
+    }
+    return sample_io;
+}
 
+nlohmann::json get_problem_tags(std::unique_ptr<APIs>& sqlAPI, int problemId) {
+    std::string query = 
+        "SELECT t.name "
+        "FROM tags t "
+        "JOIN problem_tags pt ON t.id = pt.tag_id "
+        "WHERE pt.problem_id = ?;";
+    std::unique_ptr<sql::PreparedStatement> pstmt(sqlAPI->prepareStatement(query));
+    pstmt->setInt(1, problemId);
+    std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+    nlohmann::json tags = nlohmann::json::array();
+    while (res->next()) {
+        tags.push_back(res->getString("name"));
+    }
+    return tags;
 }
 }
 
