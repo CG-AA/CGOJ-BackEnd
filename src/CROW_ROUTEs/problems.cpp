@@ -29,7 +29,7 @@ nlohmann::json getProblems(std::unique_ptr<APIs>& API, std::vector<std::string> 
     while (res->next()) {
         nlohmann::json problem;
         problem["id"] = res->getInt("id");
-        problem["name"] = res->getString("name");
+        problem["title"] = res->getString("title");
         problem["difficulty"] = res->getString("difficulty");
         problems.push_back(problem);
     }
