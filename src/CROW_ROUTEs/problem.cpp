@@ -8,19 +8,17 @@
 #include <jwt-cpp/jwt.h>
 
 namespace{
-bool have_permisson(int user_permission, std::string permission_name, nlohmann::json& settings){
-    try {
-        int index = settings["permission_flags"]["problems"][permission_name];
-        return (user_permission & (1 << index)) != 0;
-    } catch (const std::exception& e) {
-        throw std::runtime_error("Permission not found");
-    }
-}
 
-bool have_permission(nlohmann::json& settings, nlohmann::json& user_roles, nlohmann::json& problem_roles, std::string permission_name){
-    for(auto i : problem_roles){
-        try{
-        int index = settings["permission_flags"]["problems"][permission_name];
+bool have_permission(nlohmann::json& settings, std::string permission_name, const nlohmann::json& user_roles, const nlohmann::json& problem_roles){
+    std::set<std::string> roles_set;
+    for (auto& role : user_roles.items()) {
+        roles_set.insert(role.key());
+    }
+
+    for(auto& i : problem_roles) {
+        if(i["permission_flags"].get<int>() & (1 << settings["permissions"][permission_name].get<int>())){
+            if(roles_set.find(i["name"].get<std::string>()) != roles_set.end())
+                return true;
         }
     }
     return false;
