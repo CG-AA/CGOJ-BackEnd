@@ -17,7 +17,9 @@
             "view": 0,
             "view_solutions": 1,
             "edit": 2,
-            "delete": 3
+            "delete": 3,
+            "view_submissions": 4,
+            "manage_comments": 5
         }
     }
 
