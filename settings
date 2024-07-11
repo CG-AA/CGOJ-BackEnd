@@ -20,6 +20,9 @@
             "delete": 3,
             "view_submissions": 4,
             "manage_comments": 5
+        },
+        "site": {
+            "admin": 0
         }
     }
 
