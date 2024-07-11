@@ -45,7 +45,12 @@ std::string generateJWT(nlohmann::json& settings, std::string BE_IP, int user_id
     pstmt = sqlapi->prepareStatement(query);
     pstmt->setInt(1, user_id);
     res.reset(pstmt->executeQuery());
-    int16_t
+    int16_t site_permission_flags = 0;
+    while (res->next()) {
+        int16_t current_permission = res->getInt("permission_flags");
+        // Combine the current permission with the accumulated permissions using bitwise OR.
+        site_permission_flags |= current_permission;
+    }
 
     std::string token = jwt::create()
         .set_issuer(BE_IP)
