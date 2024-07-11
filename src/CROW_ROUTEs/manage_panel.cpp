@@ -6,7 +6,7 @@ namespace {
 }
 
 void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& API){
-    CROW_ROUTE(app, "/manage_panel")
+    CROW_ROUTE(app, "/manage_panel/problems")
     .methods("GET"_method, "POST"_method, "DELETE"_method)
     ([&settings, &API, &IP](const crow::request& req){
         // verify the JWT(user must login first)
@@ -16,9 +16,44 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
         } catch (const std::exception& e) {
             return crow::response(401, e.what());
         }
-        nlohmann::json roles = getRoles(jwt);
+
         if (req.method == crow::HTTPMethod::GET) {
-            
+            u_int32_t problemsPerPage = 30, offset = 0;
+            if (req.url_params.get("problemsPerPage")) {
+                problemsPerPage = std::stoi(req.url_params.get("problemsPerPage"));
+            }
+            if (req.url_params.get("offset")) {
+                offset = std::stoi(req.url_params.get("offset"));
+            }
+            std::string query;
+            std::unique_ptr<sql::PreparedStatement> pstmt;
+
+            //if the user is a site admin
+            if(getSitePermissionFlags(jwt) & 1){
+                //get all the problems
+                query = "SELECT p.id, u.name AS owner_name, p.title, p.difficulty "
+                    "FROM problems p "
+                    "JOIN users u ON p.owner_id = u.id "
+                    "LIMIT ? OFFSET ?;";
+                pstmt = API->prepareStatement(query);
+                pstmt->setInt(1, problemsPerPage);
+                pstmt->setInt(2, offset);
+            } else {
+                //get the problems that the user has permission to modify
+                
+            }
+
+            std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+            nlohmann::json problems;
+            while(res->next()) {
+                nlohmann::json problem;
+                problem["id"] = res->getInt("id");
+                problem["owner_name"] = res->getString("owner_name");
+                problem["title"] = res->getString("title");
+                problem["difficulty"] = res->getInt("difficulty");
+                problems.push_back(problem);
+            }
+                        
         }
         else if (req.method == crow::HTTPMethod::POST) {
 

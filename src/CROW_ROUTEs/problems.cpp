@@ -50,14 +50,14 @@ void ROUTE_problems(crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
         } catch (const std::exception& e) {
         }
         // Handle page query parameter
-        int page = 1, problemsPerPage = 10;
+        u_int32_t page = 1, problemsPerPage = 10;
         if (req.url_params.get("page")) {
             page = std::stoi(req.url_params.get("page"));
         }
         if (req.url_params.get("problemsPerPage")) {
             problemsPerPage = std::stoi(req.url_params.get("problemsPerPage"));
         }
-        int offset = (page - 1) * problemsPerPage;
+        u_int32_t offset = (page - 1) * problemsPerPage;
 
         nlohmann::json problems;
 
