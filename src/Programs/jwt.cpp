@@ -59,6 +59,7 @@ std::string generateJWT(nlohmann::json& settings, std::string BE_IP, int user_id
         .set_issued_at(std::chrono::system_clock::now())
         .set_expires_at(std::chrono::system_clock::now() + std::chrono::hours{24})
         .set_payload_claim("roles", jwt::claim(roles.dump()))
+        .set_payload_claim("site_permission_flags", jwt::claim(std::to_string(site_permission_flags)))
         .sign(jwt::algorithm::hs256{settings["jwt_secret"].get<std::string>()});
     return token;
 }
