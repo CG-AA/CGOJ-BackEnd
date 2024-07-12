@@ -77,6 +77,31 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
         } catch (const std::exception& e) {
             return crow::response(401, e.what());
         }
-
+        std::string query = R"(
+            SELECT 
+                p.id AS problem_id, 
+                p.title AS problem_title, 
+                p.description, 
+                p.input_format, 
+                p.output_format, 
+                p.difficulty, 
+                ps.title AS solution_title, 
+                ps.solution, 
+                ph.title AS hint_title, 
+                ph.hint, 
+                pio.sample_input, 
+                pio.sample_output, 
+                GROUP_CONCAT(t.name) AS tags
+            FROM problems p
+            LEFT JOIN problem_solutions ps ON p.id = ps.problem_id
+            LEFT JOIN problem_hints ph ON p.id = ph.problem_id
+            LEFT JOIN problem_sample_IO pio ON p.id = pio.problem_id
+            LEFT JOIN problem_tags pt ON p.id = pt.problem_id
+            LEFT JOIN tags t ON pt.tag_id = t.id
+            WHERE p.id = ? -- Replace ? with the specific problem ID
+            GROUP BY p.id, ps.id, ph.id, pio.id
+        )";
+        //if the user is a site admin
+    });
         
 }
