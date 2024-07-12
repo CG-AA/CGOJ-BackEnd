@@ -77,31 +77,50 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
         } catch (const std::exception& e) {
             return crow::response(401, e.what());
         }
-        std::string query = R"(
-            SELECT 
-                p.id AS problem_id, 
-                p.title AS problem_title, 
-                p.description, 
-                p.input_format, 
-                p.output_format, 
-                p.difficulty, 
-                ps.title AS solution_title, 
-                ps.solution, 
-                ph.title AS hint_title, 
-                ph.hint, 
-                pio.sample_input, 
-                pio.sample_output, 
-                GROUP_CONCAT(t.name) AS tags
-            FROM problems p
-            LEFT JOIN problem_solutions ps ON p.id = ps.problem_id
-            LEFT JOIN problem_hints ph ON p.id = ph.problem_id
-            LEFT JOIN problem_sample_IO pio ON p.id = pio.problem_id
-            LEFT JOIN problem_tags pt ON p.id = pt.problem_id
-            LEFT JOIN tags t ON pt.tag_id = t.id
-            WHERE p.id = ? -- Replace ? with the specific problem ID
-            GROUP BY p.id, ps.id, ph.id, pio.id
-        )";
-        //if the user is a site admin
+        //if the user is not a site admin and dont got the permission
+        if(!(getSitePermissionFlags(jwt) & 1)){
+            nlohmann::json roles = getRoles(jwt);
+            std::string query = "SELECT * FROM problem_role WHERE problem_id = ? AND role_name IN (";
+            for (size_t i = 0; i < roles.size(); ++i) {
+                query += "?";
+                if (i < roles.size() - 1) query += ", ";
+            }
+            query += ") AND permission_flags & 1 <> 0";
+            std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
+            pstmt->setInt(1, problem_id);
+            for (size_t i = 0; i < roles.size(); ++i) {
+                pstmt->setString(i + 2, roles[i].get<std::string>());
+            }
+            std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+            if (!res->next()) {
+                return crow::response(403, "Forbidden");
+            }
+        }
     });
         
 }
+
+// std::string query = R"(
+//             SELECT 
+//                 p.id AS problem_id, 
+//                 p.title AS problem_title, 
+//                 p.description, 
+//                 p.input_format, 
+//                 p.output_format, 
+//                 p.difficulty, 
+//                 ps.title AS solution_title, 
+//                 ps.solution, 
+//                 ph.title AS hint_title, 
+//                 ph.hint, 
+//                 pio.sample_input, 
+//                 pio.sample_output, 
+//                 GROUP_CONCAT(t.name) AS tags
+//             FROM problems p
+//             LEFT JOIN problem_solutions ps ON p.id = ps.problem_id
+//             LEFT JOIN problem_hints ph ON p.id = ph.problem_id
+//             LEFT JOIN problem_sample_IO pio ON p.id = pio.problem_id
+//             LEFT JOIN problem_tags pt ON p.id = pt.problem_id
+//             LEFT JOIN tags t ON pt.tag_id = t.id
+//             WHERE p.id = ?
+//             GROUP BY p.id, ps.id, ph.id, pio.id
+//         )";
