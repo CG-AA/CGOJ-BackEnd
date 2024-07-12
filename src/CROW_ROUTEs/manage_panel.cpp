@@ -1,10 +1,6 @@
 #include "manage_panel.hpp"
 #include "../Programs/jwt.hpp"
 
-namespace {
-
-}
-
 void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& API){
     CROW_ROUTE(app, "/manage_panel/problems")
     .methods("GET"_method)
