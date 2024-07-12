@@ -25,22 +25,21 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
             if (req.url_params.get("offset")) {
                 offset = std::stoi(req.url_params.get("offset"));
             }
-            std::string query;
+            std::string query = "SELECT p.id, u.name AS owner_name, p.title, p.difficulty "
+                                "FROM problems p "
+                                "JOIN users u ON p.owner_id = u.id ";
             std::unique_ptr<sql::PreparedStatement> pstmt;
 
             //if the user is a site admin
             if(getSitePermissionFlags(jwt) & 1){
                 //get all the problems
-                query = "SELECT p.id, u.name AS owner_name, p.title, p.difficulty "
-                    "FROM problems p "
-                    "JOIN users u ON p.owner_id = u.id "
-                    "LIMIT ? OFFSET ?;";
+                query += "LIMIT ? OFFSET ?";
                 pstmt = API->prepareStatement(query);
                 pstmt->setInt(1, problemsPerPage);
                 pstmt->setInt(2, offset);
             } else {
                 //get the problems that the user has permission to modify
-                
+                query +=
             }
 
             std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
