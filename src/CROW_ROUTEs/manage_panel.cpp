@@ -38,8 +38,23 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
                 pstmt->setInt(1, problemsPerPage);
                 pstmt->setInt(2, offset);
             } else {
+                //get the roles
+                nlohmann::json roles = getRoles(jwt);
                 //get the problems that the user has permission to modify
-                query +=
+                query += "JOIN problem_role pr ON p.id = pr.problem_id "
+                        "WHERE pr.role_name IN (";
+                for (size_t i = 0; i < roles.size(); ++i) {
+                    query += "?";
+                    if (i < roles.size() - 1) query += ", ";
+                }
+                query += ") AND pr.permission_flags & 1 <> 0 "
+                        "LIMIT ? OFFSET ?";
+                pstmt = API->prepareStatement(query);
+                for (size_t i = 0; i < roles.size(); ++i) {
+                    pstmt->setString(i + 1, roles[i].get<std::string>());
+                }
+                pstmt->setInt(roles.size() + 1, problemsPerPage);
+                pstmt->setInt(roles.size() + 2, offset);
             }
 
             std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
