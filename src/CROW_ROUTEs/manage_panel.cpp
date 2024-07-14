@@ -1,16 +1,47 @@
 #include "manage_panel.hpp"
 #include "../Programs/jwt.hpp"
 
+namespace {
+bool isLogin(std::string jwt, nlohmann::json& settings, std::string IP){
+    try {
+        verifyJWT(jwt, settings, IP);
+    } catch (const std::exception& e) {
+        return false;
+    }
+    return true;
+}
+//if the user is not a site admin and dont got the permission
+bool isPermissioned (std::string jwt, int problem_id, std::unique_ptr<APIs>& API) {
+    if(!(getSitePermissionFlags(jwt) & 1)){
+        nlohmann::json roles = getRoles(jwt);
+        std::string query = "SELECT * FROM problem_role WHERE problem_id = ? AND role_name IN (";
+        for (size_t i = 0; i < roles.size(); ++i) {
+            query += "?";
+            if (i < roles.size() - 1) query += ", ";
+        }
+        query += ") AND permission_flags & 1 <> 0";
+        std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
+        pstmt->setInt(1, problem_id);
+        for (size_t i = 0; i < roles.size(); ++i) {
+            pstmt->setString(i + 2, roles[i].get<std::string>());
+        }
+        std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+        if (!res->next()) {
+            return false;
+        }
+    }
+    return true;
+}
+}
+
 void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& API){
     CROW_ROUTE(app, "/manage_panel/problems")
     .methods("GET"_method)
     ([&settings, &API, &IP](const crow::request& req){
         // verify the JWT(user must login first)
         std::string jwt = req.get_header_value("Authorization");
-        try {
-            verifyJWT(jwt, settings, IP);
-        } catch (const std::exception& e) {
-            return crow::response(401, e.what());
+        if (!isLogin(jwt, settings, IP)) {
+            return crow::response(401, "Unauthorized");
         }
 
         u_int32_t problemsPerPage = 30, offset = 0;
@@ -68,29 +99,12 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
     ([&settings, &API, &IP](const crow::request& req, int problem_id){
         // verify the JWT(user must login first)
         std::string jwt = req.get_header_value("Authorization");
-        try {
-            verifyJWT(jwt, settings, IP);
-        } catch (const std::exception& e) {
-            return crow::response(401, e.what());
+        if (!isLogin(jwt, settings, IP)) {
+            return crow::response(401, "Unauthorized");
         }
         //if the user is not a site admin and dont got the permission
-        if(!(getSitePermissionFlags(jwt) & 1)){
-            nlohmann::json roles = getRoles(jwt);
-            std::string query = "SELECT * FROM problem_role WHERE problem_id = ? AND role_name IN (";
-            for (size_t i = 0; i < roles.size(); ++i) {
-                query += "?";
-                if (i < roles.size() - 1) query += ", ";
-            }
-            query += ") AND permission_flags & 1 <> 0";
-            std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
-            pstmt->setInt(1, problem_id);
-            for (size_t i = 0; i < roles.size(); ++i) {
-                pstmt->setString(i + 2, roles[i].get<std::string>());
-            }
-            std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
-            if (!res->next()) {
-                return crow::response(403, "Forbidden");
-            }
+        if (!isPermissioned(jwt, problem_id, API)) {
+            return crow::response(403, "Forbidden");
         }
         std::string query = R"(
             SELECT 
@@ -140,7 +154,6 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
             }
 
             // Assuming the structure of the result set allows for checking if the current row has a new solution, hint, or sample I/O
-            // This part of the code needs to be adjusted based on the actual result set structure and how it differentiates between different solutions, hints, and sample I/O for the same problem
             if (res->getString("solution_title").length()) {
                 nlohmann::json solution;
                 solution["title"] = res->getString("solution_title");
@@ -176,6 +189,36 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
 
         return crow::response(200, problem.dump());
     });
-        
+    CROW_ROUTE(app, "/manage_panel/problems/<int>/testcases")
+    .methods("GET"_method, "POST"_method, "PUT"_method, "DELETE"_method)
+    ([&settings, &API, &IP](const crow::request& req, int problem_id){
+        // verify the JWT(user must login first)
+        std::string jwt = req.get_header_value("Authorization");
+        if (!isLogin(jwt, settings, IP)) {
+            return crow::response(401, "Unauthorized");
+        }
+        if (!isPermissioned(jwt, problem_id, API)) {
+            return crow::response(403, "Forbidden");
+        }
+
+        std::string query = R"(
+            SELECT 
+                pt.id AS testcase_id, 
+                pt.input, 
+                pt.output, 
+                pt.score 
+            FROM problem_testcases pt
+            WHERE pt.problem_id = ?
+        )";
+        std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
+        pstmt->setInt(1, problem_id);
+        std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+        nlohmann::json testcases;
+        while(res->next()) {
+            nlohmann::json testcase;
+            testcase["id"] = res->getInt("testcase_id");
+            testcase["input"] = res->getString("input");
+            testcase["output"] = res->getString("output");
+            testcase["score"] =
 }
 
