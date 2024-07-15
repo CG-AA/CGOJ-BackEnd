@@ -210,7 +210,40 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
             }
             pstmt->setString(6, difficulty);
             pstmt->execute();
-            
+            //insert sample IO
+            //two json arrays: sample_inputs and sample_outputs
+            nlohmann::json sample_inputs = body["sample_inputs"];
+            nlohmann::json sample_outputs = body["sample_outputs"];
+            if (sample_inputs.size() != sample_outputs.size()) {
+                return crow::response(400, "Sample inputs and outputs must have the same size");
+            }
+            query = R"(
+            INSERT INTO problem_sample_IO (problem_id, sample_input, sample_output)
+            VALUES (?, ?, ?);
+            )";
+            for (size_t i = 0; i < sample_inputs.size(); ++i) {
+                std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
+                pstmt->setInt(1, problem_id);
+                pstmt->setString(2, sample_inputs[i].get<std::string>());
+                pstmt->setString(3, sample_outputs[i].get<std::string>());
+                pstmt->execute();
+            }
+            //insert tags
+            nlohmann::json tags = body["tags"];
+            query = R"(
+            INSERT INTO problem_tags (problem_id, tag_id)
+            VALUES (?, ?);
+            )";
+            try {
+                for (const auto& tag : tags) {
+                    std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
+                    pstmt->setInt(1, problem_id);
+                    pstmt->setInt(2, tag.get<int>());
+                    pstmt->execute();
+                }
+            } catch (const std::exception& e) {
+                return crow::response(400, "Invalid tag");
+            }
 
         } else if (req.method == "PUT"_method) {
             // update the problem
