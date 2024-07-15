@@ -245,8 +245,19 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
                 return crow::response(400, "Invalid tag");
             }
             //insert test cases
-            
+            //tl :ms, ml: MB, score: ?/10000
             nlohmann::json testcases = body["testcases"];
+            //validate the testcases
+            int8_t total_score = 0;
+            for (const auto& testcase : testcases) {
+                if (testcase["time_limit"].get<int>() <= 0 || testcase["memory_limit"].get<int>() <= 0 || testcase["score"].get<int>() <= 0) {
+                    return crow::response(400, "Invalid test case");
+                }
+                total_score += testcase["score"].get<int>();
+            }
+            if (total_score != 10000) {
+                return crow::response(400, "Total score of test cases must be 10000");
+            }
             query = R"(
             INSERT INTO problem_test_cases (problem_id, input, output, time_limit, memory_limit, score)
             VALUES (?, ?, ?, ?, ?, ?);
@@ -261,6 +272,7 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
                 pstmt->setInt(6, testcase["score"].get<int>());
                 pstmt->execute();
             }
+            
 
         } else if (req.method == "PUT"_method) {
             // update the problem
