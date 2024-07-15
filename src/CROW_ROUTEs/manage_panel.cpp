@@ -190,6 +190,8 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
 
             return crow::response(200, problem.dump());
         } else if (req.method == "POST"_method) {   // insert a new problem
+            //get body
+            nlohmann::json body = nlohmann::json::parse(req.body);
             //insert the problem
             std::string query = R"(
             INSERT INTO problems (owner_id, title, description, input_format, output_format, difficulty)
@@ -197,6 +199,18 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
             )";
             std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
             pstmt->setInt(1, getUserID(jwt));
+            pstmt->setString(2, body["title"].get<std::string>());
+            pstmt->setString(3, body["description"].get<std::string>());
+            pstmt->setString(4, body["input_format"].get<std::string>());
+            pstmt->setString(5, body["output_format"].get<std::string>());
+            //difficulty must be one of ["Easy", "Medium", "Hard]
+            std::string difficulty = body["difficulty"].get<std::string>();
+            if (difficulty != "Easy" && difficulty != "Medium" && difficulty != "Hard") {
+                return crow::response(400, "Invalid difficulty");
+            }
+            pstmt->setString(6, difficulty);
+            pstmt->execute();
+            
 
         } else if (req.method == "PUT"_method) {
             // update the problem
