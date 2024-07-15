@@ -22,6 +22,8 @@ void verifyJWT(std::string jwt, nlohmann::json& settings, std::string BE_IP);
 
 nlohmann::json getSitePermissionFlags(std::string jwt);
 
+int16_t getUserID(std::string jwt);
+
 /**
  * Retrieves the roles from a JSON Web Token (JWT).
  *

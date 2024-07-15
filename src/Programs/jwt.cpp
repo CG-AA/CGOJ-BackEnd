@@ -31,6 +31,11 @@ nlohmann::json getSitePermissionFlags(std::string jwt) {
     return nlohmann::json::parse(decoded.get_payload_claim("site_permission_flags").as_string());
 }
 
+int16_t getUserID(std::string jwt) {
+    auto decoded = jwt::decode(jwt);
+    return nlohmann::json::parse(decoded.get_subject());
+}
+
 std::string generateJWT(nlohmann::json& settings, std::string BE_IP, int user_id, std::unique_ptr<APIs>& sqlapi) {
     std::string query = "SELECT role_name FROM user_roles WHERE user_id = ?";
     std::unique_ptr<sql::PreparedStatement> pstmt = sqlapi->prepareStatement(query);

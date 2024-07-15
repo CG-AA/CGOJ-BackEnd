@@ -195,7 +195,9 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
             INSERT INTO problems (owner_id, title, description, input_format, output_format, difficulty)
             VALUES (?, ?, ?, ?, ?, ?);
             )";
-            
+            std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
+            pstmt->setInt(1, getUserID(jwt));
+
         } else if (req.method == "PUT"_method) {
             // update the problem
         } else if (req.method == "DELETE"_method) {
