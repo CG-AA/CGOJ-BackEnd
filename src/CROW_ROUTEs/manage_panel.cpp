@@ -244,6 +244,23 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
             } catch (const std::exception& e) {
                 return crow::response(400, "Invalid tag");
             }
+            //insert test cases
+            
+            nlohmann::json testcases = body["testcases"];
+            query = R"(
+            INSERT INTO problem_test_cases (problem_id, input, output, time_limit, memory_limit, score)
+            VALUES (?, ?, ?, ?, ?, ?);
+            )";
+            for (const auto& testcase : testcases) {
+                std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
+                pstmt->setInt(1, problem_id);
+                pstmt->setString(2, testcase["input"].get<std::string>());
+                pstmt->setString(3, testcase["output"].get<std::string>());
+                pstmt->setInt(4, testcase["time_limit"].get<int>());
+                pstmt->setInt(5, testcase["memory_limit"].get<int>());
+                pstmt->setInt(6, testcase["score"].get<int>());
+                pstmt->execute();
+            }
 
         } else if (req.method == "PUT"_method) {
             // update the problem
