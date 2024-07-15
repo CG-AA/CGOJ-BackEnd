@@ -24,6 +24,15 @@
         "site": {
             "admin": 0
         }
-    }
+    },
+    "problems_tables": [
+        "problems",
+        "problem_sample_IO",
+        "problem_tags",
+        "problem_test_cases",
+        "problem_solutions",
+        "problem_hints",
+        "problem_role"
+    ]
 
 }

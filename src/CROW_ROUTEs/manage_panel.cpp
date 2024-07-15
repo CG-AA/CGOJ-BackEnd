@@ -291,6 +291,12 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
             }
         } else if (req.method == "PUT"_method) {
             // update the problem
+            //check if the table correct
+            nlohmann::json body = nlohmann::json::parse(req.body);
+            if(settings["problem_tables"].find(body["table"]) == settings["problem_tables"].end()){
+                return crow::response(400, "Invalid table");
+            }
+            //check if the column correct
         } else if (req.method == "DELETE"_method) {
             // delete the problem
         }
