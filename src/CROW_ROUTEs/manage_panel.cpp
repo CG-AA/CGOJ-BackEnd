@@ -272,8 +272,23 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
                 pstmt->setInt(6, testcase["score"].get<int>());
                 pstmt->execute();
             }
-            
-
+            //insert roles
+            query = R"(
+            INSERT INTO problem_role (problem_id, role_name, permission_flags)
+            VALUES (?, ?, ?);
+            )";
+            nlohmann::json roles = body["roles"];
+            try {
+                for (const auto& role : roles) {
+                    std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
+                    pstmt->setInt(1, problem_id);
+                    pstmt->setString(2, role["role_name"].get<std::string>());
+                    pstmt->setInt(3, role["permission_flags"].get<int>());
+                    pstmt->execute();
+                }
+            } catch (const std::exception& e) {
+                return crow::response(400, "Invalid role");
+            }
         } else if (req.method == "PUT"_method) {
             // update the problem
         } else if (req.method == "DELETE"_method) {
