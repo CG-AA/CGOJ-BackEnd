@@ -108,6 +108,7 @@ nlohmann::json get_problem_solution(std::unique_ptr<APIs>& sqlAPI, int problemId
         nlohmann::json solution;
         solution["title"] = res->getString("title");
         solution["solution"] = res->getString("solution");
+        solution["owner_id"] = res->getInt("owner_id");
         solutions.push_back(solution);
     }
     return solutions;

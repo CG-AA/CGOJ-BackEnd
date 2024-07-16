@@ -297,6 +297,10 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
                 return crow::response(400, "Invalid table");
             }
             //check if the column correct
+            if(settings["problem_tables"][body["table"]].find(body["column"]) == settings["problem_tables"][body["table"]].end()){
+                return crow::response(400, "Invalid column");
+            }
+            std::string query = "UPDATE " + body["table"].get<std::string>() + " SET " + body["column"].get<std::string>() + " = ? WHERE id = ?";
         } else if (req.method == "DELETE"_method) {
             // delete the problem
         }

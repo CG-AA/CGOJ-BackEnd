@@ -25,14 +25,48 @@
             "admin": 0
         }
     },
-    "problems_tables": [
-        "problems",
-        "problem_sample_IO",
-        "problem_tags",
-        "problem_test_cases",
-        "problem_solutions",
-        "problem_hints",
-        "problem_role"
-    ]
+    "problems_tables": {
+        "problems" :[
+            "owner_id",
+            "title",
+            "description",
+            "input_format",
+            "output_format",
+            "difficulty"
+        ],
+        "problem_sample_IO" :[
+            "problem_id",
+            "sample_input",
+            "sample_output"
+        ],
+        "problem_tags" :[
+            "problem_id",
+            "tag_id"
+        ],
+        "problem_test_cases" :[
+            "problem_id",
+            "input",
+            "output",
+            "time_limit",
+            "memory_limit",
+            "score"
+        ],
+        "problem_solutions" :[
+            "problem_id",
+            "title",
+            "solution",
+            "owner_id"
+        ],
+        "problem_hints" :[
+            "problem_id",
+            "title",
+            "hint"
+        ],
+        "problem_role" :[
+            "problem_id",
+            "role_name",
+            "permission_flags"
+        ]
+    }
 
 }
