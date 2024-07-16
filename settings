@@ -37,9 +37,6 @@
             "sample_input",
             "sample_output"
         ],
-        "problem_tags" :[
-            "tag_id"
-        ],
         "problem_test_cases" :[
             "input",
             "output",
