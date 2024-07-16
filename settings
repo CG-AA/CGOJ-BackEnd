@@ -27,7 +27,6 @@
     },
     "problems_tables": {
         "problems" :[
-            "owner_id",
             "title",
             "description",
             "input_format",
@@ -35,16 +34,13 @@
             "difficulty"
         ],
         "problem_sample_IO" :[
-            "problem_id",
             "sample_input",
             "sample_output"
         ],
         "problem_tags" :[
-            "problem_id",
             "tag_id"
         ],
         "problem_test_cases" :[
-            "problem_id",
             "input",
             "output",
             "time_limit",
@@ -52,13 +48,10 @@
             "score"
         ],
         "problem_solutions" :[
-            "problem_id",
             "title",
-            "solution",
-            "owner_id"
+            "solution"
         ],
         "problem_hints" :[
-            "problem_id",
             "title",
             "hint"
         ],

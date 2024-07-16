@@ -300,7 +300,21 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
             if(settings["problem_tables"][body["table"]].find(body["column"]) == settings["problem_tables"][body["table"]].end()){
                 return crow::response(400, "Invalid column");
             }
-            std::string query = "UPDATE " + body["table"].get<std::string>() + " SET " + body["column"].get<std::string>() + " = ? WHERE id = ?";
+            if(body["table"] == "problems"){
+                //update the problem
+                std::string query = "UPDATE " + body["table"].get<std::string>() + " SET " + body["column"].get<std::string>() + " = ? WHERE id = ?";
+                std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
+                pstmt->setString(1, body["value"].get<std::string>());
+                pstmt->setInt(2, problem_id);
+                pstmt->execute();
+            } else {
+                //update the problem
+                std::string query = "UPDATE " + body["table"].get<std::string>() + " SET " + body["column"].get<std::string>() + " = ? WHERE problem_id = ?";
+                std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
+                pstmt->setString(1, body["value"].get<std::string>());
+                pstmt->setInt(2, problem_id);
+                pstmt->execute();
+            }
         } else if (req.method == "DELETE"_method) {
             // delete the problem
         }
