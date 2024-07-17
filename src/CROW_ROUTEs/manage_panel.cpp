@@ -289,6 +289,7 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
             } catch (const std::exception& e) {
                 return crow::response(400, "Invalid role");
             }
+            return crow::response(200, "Problem created");
         } else if (req.method == "PUT"_method) {
             // update the problem
             //check if the table correct
@@ -319,6 +320,7 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
                 pstmt->setInt(2, problem_id);
                 pstmt->execute();
             }
+            return crow::response(200, "Problem updated");
         } else if (req.method == "DELETE"_method) {
             // delete the problem
             std::string query;
@@ -378,6 +380,8 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
             pstmt = API->prepareStatement(query);
             pstmt->setInt(1, problem_id);
             pstmt->execute();
+
+            return crow::response(200, "Problem deleted");
         }
     });
     CROW_ROUTE(app, "/manage_panel/problems/<int>/testcases")
@@ -414,7 +418,26 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
             }
             return crow::response(200, testcases.dump());
         } else if (req.method == "POST"_method) {
-        } else if (req.method == "PUT"_method) {
+            //replace all the testcases
+            std::string query = "DELETE FROM problem_test_cases WHERE problem_id = ?;";
+            std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
+            pstmt->setInt(1, problem_id);
+            pstmt->execute();
+            nlohmann::json testcases = nlohmann::json::parse(req.body);
+            query = R"(
+            INSERT INTO problem_test_cases (problem_id, input, output, time_limit, memory_limit, score)
+            VALUES (?, ?, ?, ?, ?, ?)";
+            for (const auto& testcase : testcases) {
+                std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
+                pstmt->setInt(1, problem_id);
+                pstmt->setString(2, testcase["input"].get<std::string>());
+                pstmt->setString(3, testcase["output"].get<std::string>());
+                pstmt->setInt(4, testcase["time_limit"].get<int>());
+                pstmt->setInt(5, testcase["memory_limit"].get<int>());
+                pstmt->setInt(6, testcase["score"].get<int>());
+                pstmt->execute();
+            }
+            return crow::response(200, "Test cases updated");
         } else if (req.method == "DELETE"_method) {
         }
     });
