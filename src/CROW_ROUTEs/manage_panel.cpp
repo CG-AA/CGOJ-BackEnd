@@ -344,8 +344,6 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
                 "problem_tags",
                 "problem_role"
             };
-
-            // Iterate over the array and delete entries for each table
             for (auto& table : tables) {
                 std::string query = "DELETE FROM " + std::string(table) + " WHERE problem_id = ?";
                 pstmt = API->prepareStatement(query);
