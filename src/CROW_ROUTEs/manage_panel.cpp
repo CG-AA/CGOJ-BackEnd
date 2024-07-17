@@ -93,6 +93,7 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
             problem["difficulty"] = res->getInt("difficulty");
             problems.push_back(problem);
         }
+        return crow::response(200, problems.dump());
     });
     CROW_ROUTE(app, "/manage_panel/problems/<int>")
     .methods("GET"_method, "POST"_method, "PUT"_method, "DELETE"_method)
