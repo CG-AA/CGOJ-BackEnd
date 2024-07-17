@@ -334,48 +334,24 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
             pstmt->setInt(1, problem_id);
             pstmt->execute();
 
-            // Delete from problem_submissions
-            query = "DELETE FROM problem_submissions WHERE problem_id = ?";
-            pstmt = API->prepareStatement(query);
-            pstmt->setInt(1, problem_id);
-            pstmt->execute();
+            // Define an array of table names related to a problem
+            const char* tables[] = {
+                "problem_submissions",
+                "problem_sample_IO",
+                "problem_solutions",
+                "problem_hints",
+                "problem_test_cases",
+                "problem_tags",
+                "problem_role"
+            };
 
-            // Delete from problem_sample_IO
-            query = "DELETE FROM problem_sample_IO WHERE problem_id = ?";
-            pstmt = API->prepareStatement(query);
-            pstmt->setInt(1, problem_id);
-            pstmt->execute();
-
-            // Delete from problem_solutions
-            query = "DELETE FROM problem_solutions WHERE problem_id = ?";
-            pstmt = API->prepareStatement(query);
-            pstmt->setInt(1, problem_id);
-            pstmt->execute();
-
-            // Delete from problem_hints
-            query = "DELETE FROM problem_hints WHERE problem_id = ?";
-            pstmt = API->prepareStatement(query);
-            pstmt->setInt(1, problem_id);
-            pstmt->execute();
-
-            // Delete from problem_test_cases
-            query = "DELETE FROM problem_test_cases WHERE problem_id = ?";
-            pstmt = API->prepareStatement(query);
-            pstmt->setInt(1, problem_id);
-            pstmt->execute();
-
-            // Delete from problem_tags
-            query = "DELETE FROM problem_tags WHERE problem_id = ?";
-            pstmt = API->prepareStatement(query);
-            pstmt->setInt(1, problem_id);
-            pstmt->execute();
-
-            // Delete from problem_role
-            query = "DELETE FROM problem_role WHERE problem_id = ?";
-            pstmt = API->prepareStatement(query);
-            pstmt->setInt(1, problem_id);
-            pstmt->execute();
-
+            // Iterate over the array and delete entries for each table
+            for (auto& table : tables) {
+                std::string query = "DELETE FROM " + std::string(table) + " WHERE problem_id = ?";
+                pstmt = API->prepareStatement(query);
+                pstmt->setInt(1, problem_id);
+                pstmt->execute();
+            }
             // Finally, delete from problems
             query = "DELETE FROM problems WHERE id = ?";
             pstmt = API->prepareStatement(query);
