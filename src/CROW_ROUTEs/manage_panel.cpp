@@ -439,6 +439,12 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
             }
             return crow::response(200, "Test cases updated");
         } else if (req.method == "DELETE"_method) {
+            //delete all the testcases
+            std::string query = "DELETE FROM problem_test_cases WHERE problem_id = ?";
+            std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
+            pstmt->setInt(1, problem_id);
+            pstmt->execute();
+            return crow::response(200, "Test cases deleted");
         }
     });
 }
