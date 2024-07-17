@@ -321,6 +321,63 @@ void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& setti
             }
         } else if (req.method == "DELETE"_method) {
             // delete the problem
+            std::string query;
+
+            // Delete from problem_submissions_subtasks
+            query = "DELETE pst FROM problem_submissions_subtasks pst "
+                    "JOIN problem_submissions ps ON pst.submission_id = ps.id "
+                    "WHERE ps.problem_id = ?";
+            std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
+            pstmt->setInt(1, problem_id);
+            pstmt->execute();
+
+            // Delete from problem_submissions
+            query = "DELETE FROM problem_submissions WHERE problem_id = ?";
+            pstmt = API->prepareStatement(query);
+            pstmt->setInt(1, problem_id);
+            pstmt->execute();
+
+            // Delete from problem_sample_IO
+            query = "DELETE FROM problem_sample_IO WHERE problem_id = ?";
+            pstmt = API->prepareStatement(query);
+            pstmt->setInt(1, problem_id);
+            pstmt->execute();
+
+            // Delete from problem_solutions
+            query = "DELETE FROM problem_solutions WHERE problem_id = ?";
+            pstmt = API->prepareStatement(query);
+            pstmt->setInt(1, problem_id);
+            pstmt->execute();
+
+            // Delete from problem_hints
+            query = "DELETE FROM problem_hints WHERE problem_id = ?";
+            pstmt = API->prepareStatement(query);
+            pstmt->setInt(1, problem_id);
+            pstmt->execute();
+
+            // Delete from problem_test_cases
+            query = "DELETE FROM problem_test_cases WHERE problem_id = ?";
+            pstmt = API->prepareStatement(query);
+            pstmt->setInt(1, problem_id);
+            pstmt->execute();
+
+            // Delete from problem_tags
+            query = "DELETE FROM problem_tags WHERE problem_id = ?";
+            pstmt = API->prepareStatement(query);
+            pstmt->setInt(1, problem_id);
+            pstmt->execute();
+
+            // Delete from problem_role
+            query = "DELETE FROM problem_role WHERE problem_id = ?";
+            pstmt = API->prepareStatement(query);
+            pstmt->setInt(1, problem_id);
+            pstmt->execute();
+
+            // Finally, delete from problems
+            query = "DELETE FROM problems WHERE id = ?";
+            pstmt = API->prepareStatement(query);
+            pstmt->setInt(1, problem_id);
+            pstmt->execute();
         }
     });
     CROW_ROUTE(app, "/manage_panel/problems/<int>/testcases")
