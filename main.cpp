@@ -29,7 +29,7 @@ nlohmann::json settings;
 std::unique_ptr<APIs> api;
 /** The CROW application object. */
 crow::App<crow::CORSHandler> app;
-/** The IP address of the client. */
+/** The IP address of the BE. */
 std::string IP;
 /** Cache hit flag for problems_everyone_cache. */
 std::atomic<bool> problems_everyone_cache_hit{false};
