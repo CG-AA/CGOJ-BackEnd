@@ -31,7 +31,6 @@ public:
     std::array<std::string, 3> emails;
     IPrateLimit(std::string email);
 };
-}
 
 /**
  * @class RateLimit
@@ -69,6 +68,7 @@ private:
      */
     void cleanup();
 };
+} // End of anonymous namespace
 
 /**
  * @brief Handles the user registration process.
