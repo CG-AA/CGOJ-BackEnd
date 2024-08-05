@@ -26,14 +26,33 @@ nlohmann::json getRoles(std::string jwt) {
     return nlohmann::json::parse(decoded.get_payload_claim("roles").as_string());
 }
 
-nlohmann::json getSitePermissionFlags(std::string jwt) {
-    auto decoded = jwt::decode(jwt);
-    return nlohmann::json::parse(decoded.get_payload_claim("site_permission_flags").as_string());
+int16_t getSitePermissionFlags(const std::string& jwt) {
+    try {
+        auto decoded = jwt::decode(jwt);
+        if (!decoded.has_payload_claim("site_permission_flags")) {
+            throw std::runtime_error("Claim 'site_permission_flags' not found");
+        }
+        return static_cast<int16_t>(decoded.get_payload_claim("site_permission_flags").as_integer());
+    } catch (const std::exception& e) {
+        throw std::runtime_error(std::string("Failed to decode JWT: ") + e.what());
+    }
 }
 
-int16_t getUserID(std::string jwt) {
-    auto decoded = jwt::decode(jwt);
-    return nlohmann::json::parse(decoded.get_subject());
+int16_t getUserID(const std::string& jwt) {
+    try {
+        auto decoded = jwt::decode(jwt);
+        auto subject = decoded.get_subject();
+        auto json = nlohmann::json::parse(subject);
+        
+        if (!json.is_number_integer()) {
+            throw std::runtime_error("Subject is not an integer");
+        }
+        
+        return static_cast<int16_t>(json.get<int>());
+    } catch (const std::exception& e) {
+        // Handle the error appropriately, e.g., log it or rethrow
+        throw std::runtime_error(std::string("Failed to decode JWT or parse subject: ") + e.what());
+    }
 }
 
 std::string generateJWT(nlohmann::json& settings, std::string BE_IP, int user_id, std::unique_ptr<APIs>& sqlapi) {

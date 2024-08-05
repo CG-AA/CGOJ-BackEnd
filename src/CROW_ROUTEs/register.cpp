@@ -65,7 +65,7 @@ void ROUTE_Register(crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
             // tag selection
             std::string query = "SELECT COALESCE(MAX(tag), 0) + 1 AS new_tag FROM users WHERE name = ?;";
             std::unique_ptr<sql::PreparedStatement> pstmt = api->prepareStatement(query);
-            pstmt->setString(1, body["username"].get<std::string>());
+            pstmt->setString(1, body["name"].get<std::string>());
             std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
             if (res->next()) {
                 new_tag = res->getInt("new_tag");
@@ -98,7 +98,7 @@ void ROUTE_Register(crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
             // insert user
             query = "INSERT INTO users (name, tag, email, password) VALUES (?, ?, ?, ?);";
             pstmt = api->prepareStatement(query);
-            pstmt->setString(1, body["username"].get<std::string>());
+            pstmt->setString(1, body["name"].get<std::string>());
             pstmt->setInt(2, new_tag);
             pstmt->setString(3, body["email"].get<std::string>());
             pstmt->setString(4, hashed_password);
