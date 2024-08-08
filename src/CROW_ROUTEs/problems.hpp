@@ -10,6 +10,11 @@
 #include "../API/api.hpp"
 #include "../include/lrucache.hpp"
 
+namespace {
+nlohmann::json getProblems(std::unique_ptr<APIs>& API, std::vector<std::string> roles, int problemsPerPage, int offset);
+int64_t getProblemsCount(std::unique_ptr<APIs>& API, const std::vector<std::string>& roles);
+}
+
 /**
  * @brief Configures a route for accessing a list of problems.
  * 

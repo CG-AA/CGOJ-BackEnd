@@ -19,7 +19,7 @@ void ROUTE_Login(crow::App<crow::CORSHandler>& app, nlohmann::json& settings , s
         if (res->next()) {
             if (BCrypt::validatePassword(body["password"].get<std::string>(), res->getString("password"))) {
                 std::string JWT = generateJWT(settings, IP, res->getInt("id"), sqlAPI);
-                crow::response response(200, "{\"JWT\": \"" + JWT + "\"}");
+                crow::response response(200, "{\"JWT\": \"" + JWT + "\", \"name\": \"" + res->getString("name") + "\"}");
                 return response;
             } else {
                 crow::response response(400, "{\"error\": \"Invalid email or password\"}");
