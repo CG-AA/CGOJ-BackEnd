@@ -115,8 +115,9 @@ void ROUTE_problems(crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
             }
         }
         int64_t problemsCount = getProblemsCount(API, roles);
-        nlohmann::json problemsCountJson 
-        nlohmann::json res = problems;
+        nlohmann::json res;
+        res["problems"] = problems;
+        res["problemsCount"] = problemsCount;
 
         if (problems.size() == 0) {
             return crow::response(204, "No problems found.");
