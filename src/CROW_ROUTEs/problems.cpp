@@ -87,6 +87,7 @@ void ROUTE_problems(crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
             }
         } catch (const std::exception& e) {
         }
+        roles.push_back("everyone");
         // Handle page query parameter
         u_int32_t page = 1, problemsPerPage = 10;
         if (req.url_params.get("page")) {
@@ -99,10 +100,10 @@ void ROUTE_problems(crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
 
         nlohmann::json problems;
 
-        if (roles.size() || (offset+problemsPerPage > problems_everyone_cache.size() && problems_everyone_cache_hit)) {
+        if (roles.size()>1 || (offset+problemsPerPage > problems_everyone_cache.size() && problems_everyone_cache_hit)) {
             problems = getProblems(API, roles, problemsPerPage, offset);
         } else if(!problems_everyone_cache_hit) {
-            problems = getProblems(API, {"everyone"}, problemsPerPage, offset);
+            problems = getProblems(API, roles, problemsPerPage, offset);
             if(!problems.empty()) {
                 problems_everyone_cache_hit = true;
                 for (const auto& problem : problems) {

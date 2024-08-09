@@ -186,6 +186,7 @@ nlohmann::json get_problem_roles(std::unique_ptr<APIs>& sqlAPI, int problemId) {
     }
     return roles;
 }
+
 } // namespace
 
 void ROUTE_problem(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& sqlAPI, cache::lru_cache<int16_t, nlohmann::json>& problem_cache){
@@ -201,8 +202,12 @@ void ROUTE_problem(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, 
             }
         } catch (const std::exception& e) {
         }
-        nlohmann::json problem_roles;
-        problem_roles = get_problem_roles(sqlAPI, problemId);
+        roles.push_back("everyone");
+        nlohmann::json problem_roles = get_problem_roles(sqlAPI, problemId);
+        //permission check
+        if(!have_permission(settings, "view", roles, problem_roles)){
+            return crow::response(403, "Permission denied");
+        }
         //do a cache hit
         if(problem_cache.exists(problemId)){
             nlohmann::json problem = problem_cache.get(problemId);
@@ -218,6 +223,7 @@ void ROUTE_problem(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, 
             problem["hints"] = get_problem_hints(sqlAPI, problemId);
             if(have_permission(settings, "view_solutions", roles, problem_roles))
                 problem["solutions"] = get_problem_solution(sqlAPI, problemId);
+            
         } catch (const std::exception& e) {
             return crow::response(404, e.what());
         }
