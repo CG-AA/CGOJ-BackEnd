@@ -9,6 +9,7 @@
 #include <jwt-cpp/jwt.h>
 #include "../API/api.hpp"
 
+namespace JWT{
 /**
  * Verifies the authenticity of a JSON Web Token (JWT) using the provided settings and backend IP address.
  * 
@@ -42,3 +43,4 @@ nlohmann::json getRoles(std::string jwt);
  * @return The generated JWT as a string.
  */
 std::string generateJWT(nlohmann::json& settings, std::string IP, int user_id, std::unique_ptr<APIs>& sqlAPI);
+}// namespace JWT

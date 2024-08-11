@@ -5,11 +5,14 @@ void ROUTE_profile(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, 
     CROW_ROUTE(app, "/profile/<int>")
     .methods("GET"_method)
     ([&](const crow::request& req, crow::response& res, int userId){
+        bool ownProfile = false;
         try {
-            verifyJWT(req.get_header_value("Authorization"), settings, IP);
+            JWT::verifyJWT(req.get_header_value("Authorization"), settings, IP);
+            if(JWT::getUserID(req.get_header_value("Authorization")) == userId){
+                ownProfile = true;
+            }
         } catch (const std::exception& e) {
             return crow::response(401, "User must be logged in to view profile");
         }
-        
     });
 }

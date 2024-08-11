@@ -4,7 +4,7 @@
 namespace {
 bool isLogin(std::string jwt, nlohmann::json& settings, std::string IP){
     try {
-        verifyJWT(jwt, settings, IP);
+        JWT::verifyJWT(jwt, settings, IP);
     } catch (const std::exception& e) {
         return false;
     }
@@ -12,8 +12,8 @@ bool isLogin(std::string jwt, nlohmann::json& settings, std::string IP){
 }
 //if the user is not a site admin and dont got the permission
 bool isPermissioned (std::string jwt, int problem_id, std::unique_ptr<APIs>& API) {
-    if(!(getSitePermissionFlags(jwt) & 1)){
-        nlohmann::json roles = getRoles(jwt);
+    if(!(JWT::getSitePermissionFlags(jwt) & 1)){
+        nlohmann::json roles = JWT::getRoles(jwt);
         std::string query = "SELECT * FROM problem_role WHERE problem_id = ? AND role_name IN (";
         for (size_t i = 0; i < roles.size(); ++i) {
             query += "?";
@@ -56,7 +56,7 @@ void problemsRoute (crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
         std::unique_ptr<sql::PreparedStatement> pstmt;
 
         //if the user is a site admin
-        if(getSitePermissionFlags(jwt) & 1){
+        if(JWT::getSitePermissionFlags(jwt) & 1){
             //get all the problems
             query += "LIMIT ? OFFSET ?";
             pstmt = API->prepareStatement(query);
@@ -64,7 +64,7 @@ void problemsRoute (crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
             pstmt->setInt(2, offset);
         } else {
             //get the roles
-            nlohmann::json roles = getRoles(jwt);
+            nlohmann::json roles = JWT::getRoles(jwt);
             //get the problems that the user has permission to modify
             query += "JOIN problem_role pr ON p.id = pr.problem_id "
                     "WHERE pr.role_name IN (";
@@ -198,7 +198,7 @@ void problemRoute(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, s
             VALUES (?, ?, ?, ?, ?, ?);
             )";
             std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
-            pstmt->setInt(1, getUserID(jwt));
+            pstmt->setInt(1, JWT::getUserID(jwt));
             pstmt->setString(2, body["title"].get<std::string>());
             pstmt->setString(3, body["description"].get<std::string>());
             pstmt->setString(4, body["input_format"].get<std::string>());

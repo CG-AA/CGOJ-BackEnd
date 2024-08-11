@@ -7,11 +7,11 @@ void ROUTE_permissions(crow::App<crow::CORSHandler>& app, nlohmann::json& settin
     ([&settings, &API, &IP](const crow::request& req){
         std::string jwt = req.get_header_value("Authorization");
         try {
-            verifyJWT(jwt, settings, IP);
+            JWT::verifyJWT(jwt, settings, IP);
         } catch (const std::exception& e) {
             return crow::response(401, e.what());
         }
-        nlohmann::json roles = getRoles(jwt);
+        nlohmann::json roles = JWT::getRoles(jwt);
 
     });
 }

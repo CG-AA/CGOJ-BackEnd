@@ -132,7 +132,7 @@ void ROUTE_Register(crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
             return res;
         }
 
-        std::string token = generateJWT(settings, IP, user_id, api);
+        std::string token = JWT::generateJWT(settings, IP, user_id, api);
         crow::response res(200, "{\"jwt\": \"" + token + "\", \"name\": \"" + body["name"].get<std::string>() + "\"}");
         return res;
     });

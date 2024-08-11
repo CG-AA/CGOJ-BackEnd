@@ -4,7 +4,7 @@
  */
 #include "jwt.hpp"
 
-void verifyJWT(std::string jwt, nlohmann::json& settings, std::string BE_IP) {
+void JWT::verifyJWT(std::string jwt, nlohmann::json& settings, std::string BE_IP) {
     try {
         auto decoded = jwt::decode(jwt);
         auto verifier = jwt::verify()
@@ -21,12 +21,12 @@ void verifyJWT(std::string jwt, nlohmann::json& settings, std::string BE_IP) {
     }
 }
 
-nlohmann::json getRoles(std::string jwt) {
+nlohmann::json JWT::getRoles(std::string jwt) {
     auto decoded = jwt::decode(jwt);
     return nlohmann::json::parse(decoded.get_payload_claim("roles").as_string());
 }
 
-int16_t getSitePermissionFlags(const std::string& jwt) {
+int16_t JWT::getSitePermissionFlags(const std::string& jwt) {
     try {
         auto decoded = jwt::decode(jwt);
         if (!decoded.has_payload_claim("site_permission_flags")) {
@@ -38,7 +38,7 @@ int16_t getSitePermissionFlags(const std::string& jwt) {
     }
 }
 
-int16_t getUserID(const std::string& jwt) {
+int16_t JWT::getUserID(const std::string& jwt) {
     try {
         auto decoded = jwt::decode(jwt);
         auto subject = decoded.get_subject();
@@ -55,7 +55,7 @@ int16_t getUserID(const std::string& jwt) {
     }
 }
 
-std::string generateJWT(nlohmann::json& settings, std::string BE_IP, int user_id, std::unique_ptr<APIs>& sqlapi) {
+std::string JWT::generateJWT(nlohmann::json& settings, std::string BE_IP, int user_id, std::unique_ptr<APIs>& sqlapi) {
     std::string query = "SELECT role_name FROM user_roles WHERE user_id = ?";
     std::unique_ptr<sql::PreparedStatement> pstmt = sqlapi->prepareStatement(query);
     pstmt->setInt(1, user_id);

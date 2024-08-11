@@ -18,7 +18,7 @@ void ROUTE_Login(crow::App<crow::CORSHandler>& app, nlohmann::json& settings , s
         std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
         if (res->next()) {
             if (BCrypt::validatePassword(body["password"].get<std::string>(), res->getString("password"))) {
-                std::string JWT = generateJWT(settings, IP, res->getInt("id"), sqlAPI);
+                std::string JWT = JWT::generateJWT(settings, IP, res->getInt("id"), sqlAPI);
                 crow::response response(200, "{\"JWT\": \"" + JWT + "\", \"name\": \"" + res->getString("name") + "\"}");
                 return response;
             } else {
