@@ -7,6 +7,7 @@
 #include "../Programs/jwt.hpp"
 
 #include "manage_panel_routes/problems.hpp"
+#include "manage_panel_routes/problem.hpp"
 
 bool isLogin(std::string jwt, nlohmann::json& settings, std::string IP);
 bool isPermissioned (std::string jwt, int problem_id, std::unique_ptr<APIs>& API);

@@ -53,4 +53,10 @@ public:
      * @return A unique pointer to the prepared statement.
      */
     std::unique_ptr<sql::PreparedStatement> prepareStatement(const std::string& query);
+
+    void beginTransaction();
+
+    void commitTransaction();
+
+    void rollbackTransaction();
 };

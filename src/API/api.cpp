@@ -28,3 +28,16 @@ std::unique_ptr<sql::PreparedStatement> APIs::prepareStatement(const std::string
     return std::unique_ptr<sql::PreparedStatement>(con->prepareStatement(query));
 }
 
+void APIs::beginTransaction() {
+    con->setAutoCommit(false);
+}
+
+void APIs::commitTransaction() {
+    con->commit();
+    con->setAutoCommit(true);
+}
+
+void APIs::rollbackTransaction() {
+    con->rollback();
+    con->setAutoCommit(true);
+}
