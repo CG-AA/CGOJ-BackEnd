@@ -26,7 +26,7 @@
 /** Configuration settings for the application. */
 nlohmann::json settings;
 /** Pointer to the APIs class. */
-std::unique_ptr<APIs> api;
+thread_local std::unique_ptr<APIs> api;
 /** The CROW application object. */
 crow::App<crow::CORSHandler> app;
 /** The IP address of the BE. */
