@@ -1,7 +1,5 @@
 #include "manage_panel.hpp"
-#include "../Programs/jwt.hpp"
 
-namespace {
 bool isLogin(std::string jwt, nlohmann::json& settings, std::string IP){
     try {
         JWT::verifyJWT(jwt, settings, IP);
@@ -11,90 +9,42 @@ bool isLogin(std::string jwt, nlohmann::json& settings, std::string IP){
     return true;
 }
 //if the user is not a site admin and dont got the permission
-bool isPermissioned (std::string jwt, int problem_id, std::unique_ptr<APIs>& API) {
-    if(!(JWT::getSitePermissionFlags(jwt) & 1)){
-        nlohmann::json roles = JWT::getRoles(jwt);
-        std::string query = "SELECT * FROM problem_role WHERE problem_id = ? AND role_name IN (";
-        for (size_t i = 0; i < roles.size(); ++i) {
-            query += "?";
-            if (i < roles.size() - 1) query += ", ";
-        }
-        query += ") AND permission_flags & 1 <> 0";
-        std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
-        pstmt->setInt(1, problem_id);
-        for (size_t i = 0; i < roles.size(); ++i) {
-            pstmt->setString(i + 2, roles[i].get<std::string>());
-        }
-        std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
-        if (!res->next()) {
-            return false;
-        }
-    }
-    return true;
-}
-
-void problemsRoute (crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& API) {
-    CROW_ROUTE(app, "/manage_panel/problems")
-    .methods("GET"_method)
-    ([&settings, &API, &IP](const crow::request& req){
-        // verify the JWT(user must login first)
-        std::string jwt = req.get_header_value("Authorization");
-        if (!isLogin(jwt, settings, IP)) {
-            return crow::response(401, "Unauthorized");
-        }
-
-        u_int32_t problemsPerPage = 30, offset = 0;
-        if (req.url_params.get("problemsPerPage")) {
-            problemsPerPage = std::stoi(req.url_params.get("problemsPerPage"));
-        }
-        if (req.url_params.get("offset")) {
-            offset = std::stoi(req.url_params.get("offset"));
-        }
-        std::string query = "SELECT p.id, u.name AS owner_name, p.title, p.difficulty "
-                            "FROM problems p "
-                            "JOIN users u ON p.owner_id = u.id ";
-        std::unique_ptr<sql::PreparedStatement> pstmt;
-
-        //if the user is a site admin
-        if(JWT::getSitePermissionFlags(jwt) & 1){
-            //get all the problems
-            query += "LIMIT ? OFFSET ?";
-            pstmt = API->prepareStatement(query);
-            pstmt->setInt(1, problemsPerPage);
-            pstmt->setInt(2, offset);
-        } else {
-            //get the roles
+bool isPermissioned(std::string jwt, int problem_id, std::unique_ptr<APIs>& API) {
+    try {
+        // Check if the user has site-wide permission
+        if (!(JWT::getSitePermissionFlags(jwt) & 1)) {
             nlohmann::json roles = JWT::getRoles(jwt);
-            //get the problems that the user has permission to modify
-            query += "JOIN problem_role pr ON p.id = pr.problem_id "
-                    "WHERE pr.role_name IN (";
+            if (roles.empty()) {
+                return false;
+            }
+
+            std::string query = "SELECT * FROM problem_role WHERE problem_id = ? AND role_name IN (";
             for (size_t i = 0; i < roles.size(); ++i) {
                 query += "?";
                 if (i < roles.size() - 1) query += ", ";
             }
-            query += ") AND pr.permission_flags & 1 <> 0 "
-                    "LIMIT ? OFFSET ?";
-            pstmt = API->prepareStatement(query);
-            for (size_t i = 0; i < roles.size(); ++i) {
-                pstmt->setString(i + 1, roles[i].get<std::string>());
-            }
-            pstmt->setInt(roles.size() + 1, problemsPerPage);
-            pstmt->setInt(roles.size() + 2, offset);
-        }
+            query += ") AND permission_flags & 1 <> 0";
 
-        std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
-        nlohmann::json problems;
-        while(res->next()) {
-            nlohmann::json problem;
-            problem["id"] = res->getInt("id");
-            problem["owner_name"] = res->getString("owner_name");
-            problem["title"] = res->getString("title");
-            problem["difficulty"] = res->getInt("difficulty");
-            problems.push_back(problem);
+            // Prepare the statement
+            std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
+            pstmt->setInt(1, problem_id);
+            for (size_t i = 0; i < roles.size(); ++i) {
+                pstmt->setString(i + 2, roles[i].get<std::string>());
+            }
+
+            // Execute the query
+            std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+            if (!res->next()) {
+                return false;
+            }
         }
-        return crow::response(200, problems.dump());
-    });
-}//problemsRoute
+    } catch (const std::exception& e) {
+        return false;
+    }
+    return true;
+}
+
+
 void problemRoute(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& API) {
     CROW_ROUTE(app, "/manage_panel/problems/<int>")
     .methods("GET"_method, "POST"_method, "PUT"_method, "DELETE"_method)
@@ -424,7 +374,6 @@ void testcaseRoute(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, 
         }
     });
 }//testcaseRoute
-}//namespace
 
 void ROUTE_manage_panel(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& API){
     problemsRoute(app, settings, IP, API);
