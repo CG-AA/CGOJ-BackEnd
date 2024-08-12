@@ -5,7 +5,8 @@
 
 #include "api.hpp"
 
-APIs::APIs(const std::string& SQL_host, const std::string& SQL_user, const std::string& SQL_password, const std::string& SQL_database, int SQL_port) {
+APIs::APIs(const std::string& SQL_host, const std::string& SQL_user, const std::string& SQL_password, const std::string& SQL_database, int SQL_port) 
+: transactionLock(mtx, std::defer_lock) {
     driver = sql::mysql::get_mysql_driver_instance();
     std::string hostWithPort = SQL_host + ":" + std::to_string(SQL_port);
     con = std::unique_ptr<sql::Connection>(driver->connect(hostWithPort, SQL_user, SQL_password));
@@ -32,18 +33,18 @@ std::unique_ptr<sql::PreparedStatement> APIs::prepareStatement(const std::string
 }
 
 void APIs::beginTransaction() {
-    std::lock_guard<std::mutex> lock(mtx);
+    transactionLock.lock();
     con->setAutoCommit(false);
 }
 
 void APIs::commitTransaction() {
-    std::lock_guard<std::mutex> lock(mtx);
     con->commit();
     con->setAutoCommit(true);
+    transactionLock.unlock();
 }
 
 void APIs::rollbackTransaction() {
-    std::lock_guard<std::mutex> lock(mtx);
     con->rollback();
     con->setAutoCommit(true);
+    transactionLock.unlock();
 }
