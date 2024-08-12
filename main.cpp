@@ -17,7 +17,7 @@
 #include "src/CROW_ROUTEs/login.hpp"
 #include "src/CROW_ROUTEs/problems.hpp"
 #include "src/CROW_ROUTEs/problem.hpp"
-// #include "src/CROW_ROUTEs/manage_panel.hpp"
+#include "src/CROW_ROUTEs/manage_panel.hpp"
 
 #include "src/Programs/get_ip.hpp"
 
@@ -140,7 +140,7 @@ void setupRoutes() {
     ROUTE_problem(app, settings, IP, api, problem_cache);
     ROUTE_Register(app, settings, IP, api);
     ROUTE_Login(app, settings, IP, api);
-    // ROUTE_manage_panel(app, settings, IP, modify_api);
+    ROUTE_manage_panel(app, settings, IP, modify_api);
 }
 
 /**
