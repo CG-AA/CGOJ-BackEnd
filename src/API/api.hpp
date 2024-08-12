@@ -12,15 +12,20 @@
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
+#include <mutex>
 
 /**
  * @class APIs
  * @brief A class that provides an interface for interacting with a MySQL database.
+ * 
+ * not using connection pool because it is not necessary for this project
+ * the onlinejudge is designed to be used by a small number of users
  */
 class APIs {
 private:
     sql::mysql::MySQL_Driver *driver; /**< The MySQL driver object. */
     std::unique_ptr<sql::Connection> con; /**< The MySQL connection object. */
+    std::mutex mtx; /**< A mutex to ensure thread safety. */
 
 public:
     /**
