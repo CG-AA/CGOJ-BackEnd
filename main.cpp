@@ -26,7 +26,8 @@
 /** Configuration settings for the application. */
 nlohmann::json settings;
 /** Pointer to the APIs class. */
-thread_local std::unique_ptr<APIs> api;
+std::unique_ptr<APIs> api;
+std::unique_ptr<APIs> modify_api;
 /** The CROW application object. */
 crow::App<crow::CORSHandler> app;
 /** The IP address of the BE. */
@@ -139,7 +140,7 @@ void setupRoutes() {
     ROUTE_problem(app, settings, IP, api, problem_cache);
     ROUTE_Register(app, settings, IP, api);
     ROUTE_Login(app, settings, IP, api);
-    // ROUTE_manage_panel(app, settings, IP, api);
+    // ROUTE_manage_panel(app, settings, IP, modify_api);
 }
 
 /**
@@ -156,6 +157,7 @@ int main()
     setupCORS();
     setupRoutes();
     api = setupAPIs(settings);
+    modify_api = setupAPIs(settings);
 
     app.port(settings["port"].get<int>()).multithreaded().run();// .ssl(std::move(ctx))
 }
