@@ -1,48 +1,5 @@
 #include "manage_panel.hpp"
 
-bool isLogin(std::string jwt, nlohmann::json& settings, std::string IP){
-    try {
-        JWT::verifyJWT(jwt, settings, IP);
-    } catch (const std::exception& e) {
-        return false;
-    }
-    return true;
-}
-//if the user is not a site admin and dont got the permission
-bool isPermissioned(std::string jwt, int problem_id, std::unique_ptr<APIs>& API) {
-    try {
-        // Check if the user has site-wide permission
-        if (!(JWT::getSitePermissionFlags(jwt) & 1)) {
-            nlohmann::json roles = JWT::getRoles(jwt);
-            if (roles.empty()) {
-                return false;
-            }
-
-            std::string query = "SELECT * FROM problem_role WHERE problem_id = ? AND role_name IN (";
-            for (size_t i = 0; i < roles.size(); ++i) {
-                query += "?";
-                if (i < roles.size() - 1) query += ", ";
-            }
-            query += ") AND permission_flags & 1 <> 0";
-
-            // Prepare the statement
-            std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
-            pstmt->setInt(1, problem_id);
-            for (size_t i = 0; i < roles.size(); ++i) {
-                pstmt->setString(i + 2, roles[i].get<std::string>());
-            }
-
-            // Execute the query
-            std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
-            if (!res->next()) {
-                return false;
-            }
-        }
-    } catch (const std::exception& e) {
-        return false;
-    }
-    return true;
-}
 
 void testcaseRoute(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& API) {
     CROW_ROUTE(app, "/manage_panel/problems/<int>/testcases")
@@ -50,10 +7,12 @@ void testcaseRoute(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, 
     ([&settings, &API, &IP](const crow::request& req, int problem_id){
         // verify the JWT(user must login first)
         std::string jwt = req.get_header_value("Authorization");
-        if (!isLogin(jwt, settings, IP)) {
+        try {
+            JWT::verifyJWT(jwt, settings, IP);
+        } catch (const std::exception& e) {
             return crow::response(401, "Unauthorized");
         }
-        if (!isPermissioned(jwt, problem_id, API)) {
+        if (!JWT::isPermissioned(jwt, problem_id, API)) {
             return crow::response(403, "Forbidden");
         }
         if (req.method == "GET"_method) {    

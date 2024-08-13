@@ -43,4 +43,6 @@ nlohmann::json getRoles(std::string jwt);
  * @return The generated JWT as a string.
  */
 std::string generateJWT(nlohmann::json& settings, std::string IP, int user_id, std::unique_ptr<APIs>& sqlAPI);
+
+bool isPermissioned(std::string jwt, int problem_id, std::unique_ptr<APIs>& API);
 }// namespace JWT

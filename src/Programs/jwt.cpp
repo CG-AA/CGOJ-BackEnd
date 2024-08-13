@@ -87,3 +87,39 @@ std::string JWT::generateJWT(nlohmann::json& settings, std::string BE_IP, int us
         .sign(jwt::algorithm::hs256{settings["jwt_secret"].get<std::string>()});
     return token;
 }
+
+//if the user is not a site admin and dont got the permission
+bool JWT::isPermissioned(std::string jwt, int problem_id, std::unique_ptr<APIs>& API) {
+    try {
+        // Check if the user has site-wide permission
+        if (!(JWT::getSitePermissionFlags(jwt) & 1)) {
+            nlohmann::json roles = JWT::getRoles(jwt);
+            if (roles.empty()) {
+                return false;
+            }
+
+            std::string query = "SELECT * FROM problem_role WHERE problem_id = ? AND role_name IN (";
+            for (size_t i = 0; i < roles.size(); ++i) {
+                query += "?";
+                if (i < roles.size() - 1) query += ", ";
+            }
+            query += ") AND permission_flags & 1 <> 0";
+
+            // Prepare the statement
+            std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
+            pstmt->setInt(1, problem_id);
+            for (size_t i = 0; i < roles.size(); ++i) {
+                pstmt->setString(i + 2, roles[i].get<std::string>());
+            }
+
+            // Execute the query
+            std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+            if (!res->next()) {
+                return false;
+            }
+        }
+    } catch (const std::exception& e) {
+        return false;
+    }
+    return true;
+}

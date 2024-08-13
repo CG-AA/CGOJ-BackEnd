@@ -91,11 +91,13 @@ void problemRoute(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, s
     ([&settings, &API, &IP](const crow::request& req, int problem_id){
         // verify the JWT(user must login first)
         std::string jwt = req.get_header_value("Authorization");
-        if (!isLogin(jwt, settings, IP)) {
+        try {
+            JWT::verifyJWT(jwt, settings, IP);
+        } catch (const std::exception& e) {
             return crow::response(401, "Unauthorized");
         }
         //if the user is not a site admin and dont got the permission
-        if (!isPermissioned(jwt, problem_id, API)) {
+        if (!JWT::isPermissioned(jwt, problem_id, API)) {
             return crow::response(403, "Forbidden");
         }
         if (req.method == "PUT"_method) {

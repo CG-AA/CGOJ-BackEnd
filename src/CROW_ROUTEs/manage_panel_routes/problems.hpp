@@ -175,7 +175,9 @@ void problemsRoute (crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
     ([&settings, &API, &IP](const crow::request& req){
         // verify the JWT(user must login first)
         std::string jwt = req.get_header_value("Authorization");
-        if (!isLogin(jwt, settings, IP)) {
+        try {
+            JWT::verifyJWT(jwt, settings, IP);
+        } catch (const std::exception& e) {
             return crow::response(401, "Unauthorized");
         }
         if (req.method == "GET"_method) {
