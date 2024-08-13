@@ -75,42 +75,7 @@ crow::response DELETE(const crow::request& req, std::string jwt, std::unique_ptr
         pstmt->setInt(1, problem_id);
         pstmt->execute();
 
-        // Commit the transaction
-        API->commitTransaction();    // delete the problem
-    std::string query;
-
-    // Delete from problem_submissions_subtasks
-    query = "DELETE pst FROM problem_submissions_subtasks pst "
-            "JOIN problem_submissions ps ON pst.submission_id = ps.id "
-            "WHERE ps.problem_id = ?";
-    std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
-    pstmt->setInt(1, problem_id);
-    pstmt->execute();
-
-    // Define an array of table names related to a problem
-    const char* tables[] = {
-        "problem_submissions",
-        "problem_sample_IO",
-        "problem_solutions",
-        "problem_hints",
-        "problem_test_cases",
-        "problem_tags",
-        "problem_role"
-    };
-    for (auto& table : tables) {
-        std::string query = "DELETE FROM " + std::string(table) + " WHERE problem_id = ?";
-        pstmt = API->prepareStatement(query);
-        pstmt->setInt(1, problem_id);
-        pstmt->execute();
-    }
-    // Finally, delete from problems
-    query = "DELETE FROM problems WHERE id = ?";
-    pstmt = API->prepareStatement(query);
-    pstmt->setInt(1, problem_id);
-    pstmt->execute();
-
-    return crow::response(200, "Problem deleted");
-
+        API->commitTransaction();
         return crow::response(200, "Problem deleted");
     } catch (const std::exception& e) {
         // Rollback the transaction in case of an error
