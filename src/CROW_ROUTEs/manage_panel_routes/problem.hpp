@@ -100,7 +100,7 @@ void problemRoute(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, s
         }
         if (req.method == "PUT"_method) {
             return PUT(req, jwt, API, settings, problem_id);
-        } else if (req.method == "DELETE"_method) {
+        } else /*if (req.method == "DELETE"_method)*/ {
             return DELETE(req, jwt, API, settings, problem_id);
         }
     });

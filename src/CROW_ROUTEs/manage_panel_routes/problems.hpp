@@ -180,7 +180,7 @@ void problemsRoute (crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
         }
         if (req.method == "GET"_method) {
             return GET(req, jwt, API);
-        } else if (req.method == "POST"_method) {
+        } else /*if (req.method == "POST"_method)*/ {
             return POST(req, jwt, API);
         }
 
