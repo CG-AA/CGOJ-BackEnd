@@ -1,6 +1,9 @@
 #pragma once
-#include "../manage_panel.hpp"
-
+#include <crow.h>
+#include <crow/middlewares/cors.h>
+#include <nlohmann/json.hpp>
+#include "../../API/api.hpp"
+#include "../../Programs/jwt.hpp"
 namespace {
 crow::response PUT(const crow::request& req, std::string jwt, std::unique_ptr<APIs>& API, nlohmann::json& settings, int problem_id) {
     // update the problem

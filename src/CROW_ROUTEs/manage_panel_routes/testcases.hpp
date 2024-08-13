@@ -1,6 +1,9 @@
 #pragma once
-#include "../manage_panel.hpp"
-
+#include <crow.h>
+#include <crow/middlewares/cors.h>
+#include <nlohmann/json.hpp>
+#include "../../API/api.hpp"
+#include "../../Programs/jwt.hpp"
 void testcaseRoute(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& API) {
     CROW_ROUTE(app, "/manage_panel/problems/<int>/testcases")
     .methods("GET"_method, "POST"_method, "PUT"_method, "DELETE"_method)

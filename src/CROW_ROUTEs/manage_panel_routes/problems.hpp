@@ -1,6 +1,9 @@
 #pragma once
-#include "../manage_panel.hpp"
-
+#include <crow.h>
+#include <crow/middlewares/cors.h>
+#include <nlohmann/json.hpp>
+#include "../../API/api.hpp"
+#include "../../Programs/jwt.hpp"
 namespace {
 crow::response GET(const crow::request& req, std::string jwt, std::unique_ptr<APIs>& API) {
     u_int32_t problemsPerPage = 30, offset = 0;
