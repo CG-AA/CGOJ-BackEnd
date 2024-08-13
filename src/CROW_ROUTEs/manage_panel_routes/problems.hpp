@@ -172,7 +172,7 @@ crow::response POST(const crow::request& req, std::string jwt, std::unique_ptr<A
 }
 }// namespace
 
-void problemsRoute (crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& API) {
+inline void problemsRoute (crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& API) {
     CROW_ROUTE(app, "/manage_panel/problems")
     .methods("GET"_method, "POST"_method)
     ([&settings, &API, &IP](const crow::request& req){
