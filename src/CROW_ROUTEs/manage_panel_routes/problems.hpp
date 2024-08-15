@@ -181,6 +181,7 @@ inline void problemsRoute (crow::App<crow::CORSHandler>& app, nlohmann::json& se
         try {
             JWT::verifyJWT(jwt, settings, IP);
         } catch (const std::exception& e) {
+            CROW_LOG_ERROR << e.what();
             return crow::response(401, "Unauthorized");
         }
         if (req.method == "GET"_method) {
