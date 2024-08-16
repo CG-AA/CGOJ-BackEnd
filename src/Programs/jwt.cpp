@@ -14,6 +14,10 @@ void JWT::verifyJWT(std::string jwt, nlohmann::json& settings, std::string BE_IP
 
         verifier.verify(decoded);
         return;
+    } catch (const std::bad_alloc& e) {
+        std::string error = "Memory allocation failed: " + std::string(e.what());
+        std::cerr << error << std::endl;
+        throw std::runtime_error(error);
     } catch (const std::exception& e) {
         std::string error = "Failed to verify JWT: " + std::string(e.what());
         std::cerr << error << std::endl;
