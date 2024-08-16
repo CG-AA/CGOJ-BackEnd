@@ -3,6 +3,7 @@
  * @brief Implementation of the JSON Web Token (JWT) functions.
  */
 #include "jwt.hpp"
+#include <iostream>
 
 void JWT::verifyJWT(std::string jwt, nlohmann::json& settings, std::string BE_IP) {
     try {
@@ -11,13 +12,10 @@ void JWT::verifyJWT(std::string jwt, nlohmann::json& settings, std::string BE_IP
             .allow_algorithm(jwt::algorithm::hs256{settings["jwt_secret"].get<std::string>()})
             .with_issuer(BE_IP)
             .with_audience(BE_IP);
+        std::cout << "JWT verified" << std::endl;
 
         verifier.verify(decoded);
         return;
-    } catch (const std::bad_alloc& e) {
-        std::string error = "Memory allocation failed: " + std::string(e.what());
-        std::cerr << error << std::endl;
-        throw std::runtime_error(error);
     } catch (const std::exception& e) {
         std::string error = "Failed to verify JWT: " + std::string(e.what());
         std::cerr << error << std::endl;
