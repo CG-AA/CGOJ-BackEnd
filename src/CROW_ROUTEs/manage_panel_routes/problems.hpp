@@ -59,9 +59,11 @@ crow::response GET(const crow::request& req, std::string jwt, std::unique_ptr<AP
 }
 
 crow::response POST(const crow::request& req, std::string jwt, std::unique_ptr<APIs>& API) {
+    return crow::response(400, "test");
     try {
         // Parse the request body
         nlohmann::json body = nlohmann::json::parse(req.body);
+        CROW_LOG_INFO << body.dump();
 
         // Validate difficulty
         std::string difficulty = body["difficulty"].get<std::string>();
