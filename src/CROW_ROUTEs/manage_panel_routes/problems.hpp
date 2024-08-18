@@ -5,7 +5,7 @@
 #include "../../API/api.hpp"
 #include "../../Programs/jwt.hpp"
 namespace {
-crow::response GET(const crow::request& req, std::string jwt, std::unique_ptr<APIs>& API) {
+inline crow::response GET(const crow::request& req, std::string jwt, std::unique_ptr<APIs>& API) {
     u_int32_t problemsPerPage = 30, offset = 0;
     if (req.url_params.get("problemsPerPage")) {
         problemsPerPage = std::stoi(req.url_params.get("problemsPerPage"));
@@ -58,7 +58,7 @@ crow::response GET(const crow::request& req, std::string jwt, std::unique_ptr<AP
     return crow::response(200, problems.dump());
 }
 
-crow::response POST(const crow::request& req, std::string jwt, std::unique_ptr<APIs>& API) {
+inline crow::response POST(const crow::request& req, std::string jwt, std::unique_ptr<APIs>& API) {
     try {
         // Parse the request body
         nlohmann::json body = nlohmann::json::parse(req.body);

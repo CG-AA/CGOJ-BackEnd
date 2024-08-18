@@ -7,6 +7,7 @@
 #include <iostream>
 
 void JWT::verifyJWT(std::string jwt, nlohmann::json& settings, std::string BE_IP) {
+    std::cout << "JWT: " << jwt << std::endl;
     auto decoded = jwt::decode(jwt);
     auto verifier = jwt::verify()
         .allow_algorithm(jwt::algorithm::hs256{settings["jwt_secret"].get<std::string>()})
