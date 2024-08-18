@@ -1,3 +1,4 @@
+#pragma once
 /**
  * @file jwt.cpp
  * @brief Implementation of the JSON Web Token (JWT) functions.
