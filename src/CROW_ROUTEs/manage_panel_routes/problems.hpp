@@ -185,6 +185,7 @@ inline void problemsRoute (crow::App<crow::CORSHandler>& app, nlohmann::json& se
             CROW_LOG_INFO << e.what();
             return crow::response(401, "Unauthorized");
         }
+        CROW_LOG_INFO << "JWT verified";
         if (req.method == "GET"_method) {
             return GET(req, jwt, API);
         } else /*if (req.method == "POST"_method)*/ {
