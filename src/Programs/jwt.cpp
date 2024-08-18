@@ -7,21 +7,13 @@
 #include <iostream>
 
 void JWT::verifyJWT(std::string jwt, nlohmann::json& settings, std::string BE_IP) {
-    try {
-        auto decoded = jwt::decode(jwt);
-        auto verifier = jwt::verify()
-            .allow_algorithm(jwt::algorithm::hs256{settings["jwt_secret"].get<std::string>()})
-            .with_issuer(BE_IP)
-            .with_audience(BE_IP);
-        std::cout << "JWT verified" << std::endl;
-
-        verifier.verify(decoded);
-        return;
-    } catch (const std::exception& e) {
-        std::string error = "Failed to verify JWT: " + std::string(e.what());
-        std::cerr << error << std::endl;
-        throw std::runtime_error(error);
-    }
+    auto decoded = jwt::decode(jwt);
+    auto verifier = jwt::verify()
+        .allow_algorithm(jwt::algorithm::hs256{settings["jwt_secret"].get<std::string>()})
+        .with_issuer(BE_IP)
+        .with_audience(BE_IP);
+    verifier.verify(decoded);
+    return;
 }
 
 nlohmann::json JWT::getRoles(std::string jwt) {
