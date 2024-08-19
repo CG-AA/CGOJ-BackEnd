@@ -181,7 +181,12 @@ inline void problemsRoute (crow::App<crow::CORSHandler>& app, nlohmann::json& se
         std::string jwt = req.get_header_value("Authorization");
         CROW_LOG_INFO << jwt;
         try {
-            JWT::verifyJWT(jwt, settings, IP);
+            auto decoded = jwt::decode(jwt);
+            auto verifier = jwt::verify()
+                .allow_algorithm(jwt::algorithm::hs256{settings["jwt_secret"].get<std::string>()})
+                .with_issuer(IP)
+                .with_audience(IP);
+            verifier.verify(decoded);
         } catch (const std::exception& e) {
             CROW_LOG_INFO << e.what();
             return crow::response(401, "Unauthorized");
