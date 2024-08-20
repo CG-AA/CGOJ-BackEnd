@@ -4,11 +4,12 @@
  * @brief Implementation of the JSON Web Token (JWT) functions.
  */
 #include "jwt.hpp"
-#include <iostream>
+#include <crow.h>
+
 
 void JWT::verifyJWT(std::string jwt, nlohmann::json& settings, std::string BE_IP) {
-    std::cout << "JWT: " << jwt << std::endl;
     auto decoded = jwt::decode(jwt);
+    CROW_LOG_INFO << BE_IP;
     auto verifier = jwt::verify()
         .allow_algorithm(jwt::algorithm::hs256{settings["jwt_secret"].get<std::string>()})
         .with_issuer(BE_IP)
@@ -81,6 +82,7 @@ std::string JWT::generateJWT(nlohmann::json& settings, std::string BE_IP, int us
         .set_payload_claim("roles", jwt::claim(roles.dump()))
         .set_payload_claim("site_permission_flags", jwt::claim(std::to_string(site_permission_flags)))
         .sign(jwt::algorithm::hs256{settings["jwt_secret"].get<std::string>()});
+    CROW_LOG_INFO << BE_IP;
     return token;
 }
 
