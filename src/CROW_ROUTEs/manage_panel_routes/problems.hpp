@@ -3,6 +3,7 @@
 #include <crow/middlewares/cors.h>
 #include <nlohmann/json.hpp>
 #include "../../API/api.hpp"
+#include <jwt-cpp/jwt.h>
 namespace {
 // inline crow::response GET(const crow::request& req, std::string jwt, std::unique_ptr<APIs>& API) {
 //     u_int32_t problemsPerPage = 30, offset = 0;
@@ -184,9 +185,7 @@ inline void problemsRoute (crow::App<crow::CORSHandler>& app, nlohmann::json& se
             CROW_LOG_INFO << "Decoded: " << decoded.get_payload();
             CROW_LOG_INFO << settings["jwt_secret"].get<std::string>();
             auto verifier = jwt::verify()
-                .allow_algorithm(jwt::algorithm::hs256("replace_me"))
-                .with_issuer(IP)
-                .with_audience(IP);
+                .allow_algorithm(jwt::algorithm::hs256("replace_me"));
             CROW_LOG_INFO << "Verifying...";
             verifier.verify(decoded);
             CROW_LOG_INFO << "Verified";
