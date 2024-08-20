@@ -7,7 +7,7 @@
 inline void testcaseRoute(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& API) {
     CROW_ROUTE(app, "/manage_panel/problems/<int>/testcases")
     .methods("GET"_method, "POST"_method, "PUT"_method, "DELETE"_method)
-    ([&settings, &API, &IP](const crow::request& req, int problem_id){
+    ([&settings, &API, IP](const crow::request& req, int problem_id){
         // verify the JWT(user must login first)
         std::string jwt = req.get_header_value("Authorization");
         try {

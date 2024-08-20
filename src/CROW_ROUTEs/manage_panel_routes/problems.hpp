@@ -176,7 +176,7 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
 inline void problemsRoute (crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& API) {
     CROW_ROUTE(app, "/manage_panel/problems")
     .methods("GET"_method, "POST"_method)
-    ([&settings, &API, &IP](const crow::request& req){
+    ([&settings, &API, IP](const crow::request& req){
         // verify the JWT(user must login first)
         std::string jwt = req.get_header_value("Authorization");
         try {

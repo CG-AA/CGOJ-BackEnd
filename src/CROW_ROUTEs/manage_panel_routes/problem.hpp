@@ -91,7 +91,7 @@ crow::response DELETE(const crow::request& req, std::string jwt, std::unique_ptr
 inline void problemRoute(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& API) {
     CROW_ROUTE(app, "/manage_panel/problems/<int>")
     .methods("PUT"_method, "DELETE"_method)
-    ([&settings, &API, &IP](const crow::request& req, int problem_id){
+    ([&settings, &API, IP](const crow::request& req, int problem_id){
         // verify the JWT(user must login first)
         std::string jwt = req.get_header_value("Authorization");
         try {
