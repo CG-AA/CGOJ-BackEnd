@@ -180,13 +180,15 @@ inline void problemsRoute (crow::App<crow::CORSHandler>& app, nlohmann::json& se
         // verify the JWT(user must login first)
         std::string jwt = req.get_header_value("Authorization");
         try {
+            CROW_LOG_INFO << jwt;
+            CROW_LOG_INFO << IP;
             JWT::verifyJWT(jwt, settings, IP);
         } catch (const std::exception& e) {
             CROW_LOG_INFO << e.what();
             return crow::response(401, "Unauthorized");
         }
         if (req.method == "GET"_method) {
-            // return GET(req, jwt, API);
+            return GET(req, jwt, API);
         } else /*if (req.method == "POST"_method)*/ {
             return POST(req, jwt, API);
         }
