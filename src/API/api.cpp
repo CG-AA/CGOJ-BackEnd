@@ -6,8 +6,7 @@
 #include "api.hpp"
 #include <crow.h>
 
-APIs::APIs(const std::string& SQL_host, const std::string& SQL_user, const std::string& SQL_password, const std::string& SQL_database, int SQL_port) 
-: transactionLock(mtx, std::defer_lock) {
+APIs::APIs(const std::string& SQL_host, const std::string& SQL_user, const std::string& SQL_password, const std::string& SQL_database, int SQL_port) {
     driver = sql::mysql::get_mysql_driver_instance();
     std::string hostWithPort = SQL_host + ":" + std::to_string(SQL_port);
     con = std::unique_ptr<sql::Connection>(driver->connect(hostWithPort, SQL_user, SQL_password));
@@ -34,7 +33,7 @@ std::unique_ptr<sql::PreparedStatement> APIs::prepareStatement(const std::string
 }
 
 void APIs::beginTransaction() {
-    transactionLock.lock();
+    mtx.lock();
     con->setAutoCommit(false);
     CROW_LOG_INFO << "Transaction started";
 }
@@ -42,13 +41,13 @@ void APIs::beginTransaction() {
 void APIs::commitTransaction() {
     con->commit();
     con->setAutoCommit(true);
-    transactionLock.unlock();
+    mtx.unlock();
     CROW_LOG_INFO << "Transaction committed";
 }
 
 void APIs::rollbackTransaction() {
     con->rollback();
     con->setAutoCommit(true);
-    transactionLock.unlock();
+    mtx.unlock();
     CROW_LOG_INFO << "Transaction rolled back";
 }

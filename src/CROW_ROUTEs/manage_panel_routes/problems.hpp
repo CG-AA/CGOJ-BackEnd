@@ -77,6 +77,7 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
         INSERT INTO problems (owner_id, title, description, input_format, output_format, difficulty)
         VALUES (?, ?, ?, ?, ?, ?);
         )";
+        CROW_LOG_INFO << query;
         std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
         CROW_LOG_INFO << JWT::getUserID(jwt);
         pstmt->setInt(1, JWT::getUserID(jwt));
@@ -85,6 +86,7 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
         pstmt->setString(4, body["input_format"].get<std::string>());
         pstmt->setString(5, body["output_format"].get<std::string>());
         pstmt->setString(6, difficulty);
+        CROW_LOG_INFO << "Owner ID: " << JWT::getUserID(jwt);
         pstmt->execute();
         CROW_LOG_INFO << "Problem inserted";
 
