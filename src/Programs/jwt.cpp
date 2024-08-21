@@ -4,12 +4,9 @@
  * @brief Implementation of the JSON Web Token (JWT) functions.
  */
 #include "jwt.hpp"
-#include <crow.h>
 
 
 void JWT::verifyJWT(std::string jwt, nlohmann::json& settings, std::string BE_IP) {
-    CROW_LOG_INFO << jwt;
-    CROW_LOG_INFO << BE_IP;
     auto decoded = jwt::decode(jwt);
     auto verifier = jwt::verify()
         .allow_algorithm(jwt::algorithm::hs256{settings["jwt_secret"].get<std::string>()})

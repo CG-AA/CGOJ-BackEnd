@@ -4,6 +4,7 @@
  */
 
 #include "api.hpp"
+#include <crow.h>
 
 APIs::APIs(const std::string& SQL_host, const std::string& SQL_user, const std::string& SQL_password, const std::string& SQL_database, int SQL_port) 
 : transactionLock(mtx, std::defer_lock) {
@@ -35,16 +36,19 @@ std::unique_ptr<sql::PreparedStatement> APIs::prepareStatement(const std::string
 void APIs::beginTransaction() {
     transactionLock.lock();
     con->setAutoCommit(false);
+    CROW_LOG_INFO << "Transaction started";
 }
 
 void APIs::commitTransaction() {
     con->commit();
     con->setAutoCommit(true);
     transactionLock.unlock();
+    CROW_LOG_INFO << "Transaction committed";
 }
 
 void APIs::rollbackTransaction() {
     con->rollback();
     con->setAutoCommit(true);
     transactionLock.unlock();
+    CROW_LOG_INFO << "Transaction rolled back";
 }
