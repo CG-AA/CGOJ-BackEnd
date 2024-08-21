@@ -168,6 +168,7 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
 
         return crow::response(200, "Problem created");
     } catch (const std::exception& e) {
+        CROW_LOG_ERROR << "Exception occurred: " << e.what();
         return crow::response(500, std::string("Internal server error: ") + e.what());
     }
 }
