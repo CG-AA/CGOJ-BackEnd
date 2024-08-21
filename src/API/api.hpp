@@ -25,7 +25,7 @@ class APIs {
 private:
     sql::mysql::MySQL_Driver *driver; /**< The MySQL driver object. */
     std::unique_ptr<sql::Connection> con; /**< The MySQL connection object. */
-    std::mutex mtx; /**< A mutex to ensure thread safety. */
+    std::recursive_mutex mtx; /**< A mutex to ensure thread safety. */
 
 public:
     /**

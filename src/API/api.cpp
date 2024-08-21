@@ -14,21 +14,21 @@ APIs::APIs(const std::string& SQL_host, const std::string& SQL_user, const std::
 }
 
 std::unique_ptr<sql::ResultSet> APIs::read(const std::string& query) {
-    std::lock_guard<std::mutex> lock(mtx);
+    std::lock_guard<std::recursive_mutex> lock(mtx);
     std::unique_ptr<sql::Statement> stmt(con->createStatement());
     std::unique_ptr<sql::ResultSet> res(stmt->executeQuery(query));
     return res;
 }
 
 int APIs::write(const std::string& query) {
-    std::lock_guard<std::mutex> lock(mtx);
+    std::lock_guard<std::recursive_mutex> lock(mtx);
     std::unique_ptr<sql::Statement> stmt(con->createStatement());
     int updateCount = stmt->executeUpdate(query);
     return updateCount;
 }
 
 std::unique_ptr<sql::PreparedStatement> APIs::prepareStatement(const std::string& query) {
-    std::lock_guard<std::mutex> lock(mtx);
+    std::lock_guard<std::recursive_mutex> lock(mtx);
     return std::unique_ptr<sql::PreparedStatement>(con->prepareStatement(query));
 }
 
