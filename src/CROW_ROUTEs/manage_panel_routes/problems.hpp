@@ -78,6 +78,7 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
         VALUES (?, ?, ?, ?, ?, ?);
         )";
         std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
+        CROW_LOG_INFO << JWT::getUserID(jwt);
         pstmt->setInt(1, JWT::getUserID(jwt));
         pstmt->setString(2, body["title"].get<std::string>());
         pstmt->setString(3, body["description"].get<std::string>());

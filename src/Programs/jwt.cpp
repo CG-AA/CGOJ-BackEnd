@@ -80,7 +80,6 @@ std::string JWT::generateJWT(nlohmann::json& settings, std::string BE_IP, int us
         .set_payload_claim("roles", jwt::claim(roles.dump()))
         .set_payload_claim("site_permission_flags", jwt::claim(std::to_string(site_permission_flags)))
         .sign(jwt::algorithm::hs256{settings["jwt_secret"].get<std::string>()});
-    CROW_LOG_INFO << BE_IP;
     return token;
 }
 
