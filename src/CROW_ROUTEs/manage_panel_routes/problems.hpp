@@ -71,7 +71,7 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
         // Validate difficulty
         std::string difficulty = body["difficulty"].get<std::string>();
         if (difficulty != "Easy" && difficulty != "Medium" && difficulty != "Hard") {
-            return crow::response(400, "Invalid difficulty");
+            return crow::response(400, R"({"error": "Invalid difficulty"})");
         }
         API->beginTransaction();
 
@@ -140,7 +140,7 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
             total_score += testcase["score"].get<int>();
         }
         if (total_score != 10000) {
-            return crow::response(400, "Total score of test cases must be 10000");
+            return crow::response(400, R"({"error": "Total score must be 10000"})");
         }
         query = R"(
         INSERT INTO problem_test_cases (problem_id, input, output, time_limit, memory_limit, score)
@@ -172,11 +172,11 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
         }
 
         API->commitTransaction();
-        return crow::response(200, "Problem created");
+        return crow::response(200, R"({"message": "Problem created successfully"})");
     } catch (const std::exception& e) {
         CROW_LOG_ERROR << "Exception occurred: " << e.what();
         API->rollbackTransaction();
-        return crow::response(500, "Internal server error");
+        return crow::response(500, R"({"error": "Internal server error"})");
     }
 }
 }// namespace
