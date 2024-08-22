@@ -2,10 +2,16 @@
 #include <crow.h>
 #include <crow/middlewares/cors.h>
 #include <nlohmann/json.hpp>
+#include <sstream>
 #include "../../API/api.hpp"
 #include "../../Programs/jwt.hpp"
 
-#define serverError(reason) return crow::response(500, R"({"error": ")" + reason + R"("})")
+#define badReq(reason) { \
+    std::ostringstream oss; \
+    oss << "{\"error\": \"" << reason << "\"}"; \
+    API->rollbackTransaction(); \
+    return crow::response(400, oss.str()); \
+}    
 namespace {
 inline crow::response GET(const crow::request& req, std::string jwt, std::unique_ptr<APIs>& API) {
     u_int32_t problemsPerPage = 30, offset = 0;
@@ -79,14 +85,15 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
         std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
         pstmt->setInt(1, JWT::getUserID(jwt));
         try {
-        pstmt->setString(2, body["problem"]["title"].get<std::string>());
-        pstmt->setString(3, body["problem"]["description"].get<std::string>());
-        pstmt->setString(4, body["problem"]["input_format"].get<std::string>());
-        pstmt->setString(5, body["problem"]["output_format"].get<std::string>());
-        pstmt->setString(6, body["problem"]["difficulty"].get<std::string>());
-        pstmt->execute();
+            pstmt->setString(2, body["problem"]["title"].get<std::string>());
+            pstmt->setString(3, body["problem"]["description"].get<std::string>());
+            pstmt->setString(4, body["problem"]["input_format"].get<std::string>());
+            pstmt->setString(5, body["problem"]["output_format"].get<std::string>());
+            pstmt->setString(6, body["problem"]["difficulty"].get<std::string>());
+            pstmt->execute();
         } catch (const std::exception& e) {
-            serverError(e.what());
+            badReq(e.what());
+        }
 
         // Get the problem_id
         query = "SELECT id FROM problems WHERE title = ?;";
@@ -99,75 +106,86 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
         int problem_id = res->getInt("id");
 
         // Insert sample IO
-        nlohmann::json sample_inputs = body["sample_inputs"];
-        nlohmann::json sample_outputs = body["sample_outputs"];
-        if (sample_inputs.size() != sample_outputs.size()) {
-            return crow::response(400, "Sample inputs and outputs must have the same size");
-        }
         query = R"(
         INSERT INTO problem_sample_IO (problem_id, sample_input, sample_output)
         VALUES (?, ?, ?);
         )";
-        for (size_t i = 0; i < sample_inputs.size(); ++i) {
-            pstmt = API->prepareStatement(query);
-            pstmt->setInt(1, problem_id);
-            pstmt->setString(2, sample_inputs[i].get<std::string>());
-            pstmt->setString(3, sample_outputs[i].get<std::string>());
-            pstmt->execute();
+        try{
+            for (const auto& sample : body["problem_sample_IO"]) {
+                pstmt = API->prepareStatement(query);
+                pstmt->setInt(1, problem_id);
+                pstmt->setString(2, sample["input"].get<std::string>());
+                pstmt->setString(3, sample["output"].get<std::string>());
+                pstmt->execute();
+            }
+        } catch (const std::exception& e) {
+            badReq(e.what());
         }
 
         // Insert tags
-        nlohmann::json tags = body["tags"];
         query = R"(
         INSERT INTO problem_tags (problem_id, tag_id)
         VALUES (?, ?);
         )";
-        for (const auto& tag : tags) {
-            pstmt = API->prepareStatement(query);
-            pstmt->setInt(1, problem_id);
-            pstmt->setInt(2, tag);
-            pstmt->execute();
+        try{
+            for (const auto& tag : body["problem_tags"]) {
+                pstmt = API->prepareStatement(query);
+                pstmt->setInt(1, problem_id);
+                pstmt->setString(2, tag.get<std::string>());
+                pstmt->execute();
+            }
+        } catch (const std::exception& e) {
+            badReq(e.what());
         }
 
         // Insert test cases
-        nlohmann::json testcases = body["testcases"];
-        int total_score = 0;
-        for (const auto& testcase : testcases) {
-            if (testcase["time_limit"].get<int>() <= 0 || testcase["memory_limit"].get<int>() <= 0 || testcase["score"].get<int>() <= 0) {
-                return crow::response(400, "Invalid test case");
-            }
-            total_score += testcase["score"].get<int>();
-        }
-        if (total_score != 10000) {
-            return crow::response(400, R"({"error": "Total score must be 10000"})");
-        }
         query = R"(
         INSERT INTO problem_test_cases (problem_id, input, output, time_limit, memory_limit, score)
         VALUES (?, ?, ?, ?, ?, ?);
         )";
-        for (const auto& testcase : testcases) {
-            pstmt = API->prepareStatement(query);
-            pstmt->setInt(1, problem_id);
-            pstmt->setString(2, testcase["input"].get<std::string>());
-            pstmt->setString(3, testcase["output"].get<std::string>());
-            pstmt->setInt(4, testcase["time_limit"].get<int>());
-            pstmt->setInt(5, testcase["memory_limit"].get<int>());
-            pstmt->setInt(6, testcase["score"].get<int>());
-            pstmt->execute();
+        try {
+            int TTS = 0;
+            for (const auto& testcase : body["problem_test_cases"]) {
+                std::string I = testcase["input"].get<std::string>(),
+                            O = testcase["output"].get<std::string>();
+                int TL = testcase["time_limit"].get<int>(),
+                    ML = testcase["memory_limit"].get<int>(),
+                    S = testcase["score"].get<int>();
+                if(TL < 0 || ML < 0 || S < 0){
+                    badReq("Invalid test case");
+                }
+                TTS += S;
+                pstmt = API->prepareStatement(query);
+                pstmt->setInt(1, problem_id);
+                pstmt->setString(2, I);
+                pstmt->setString(3, O);
+                pstmt->setInt(4, TL);
+                pstmt->setInt(5, ML);
+                pstmt->setInt(6, S);
+                pstmt->execute();
+            }
+            if(TTS != 10000){
+                badReq("Total test case score must be 10000");
+            }
+        } catch (const std::exception& e) {
+            badReq(e.what());
         }
 
         // Insert roles
-        nlohmann::json roles = body["roles"];
         query = R"(
         INSERT INTO problem_role (problem_id, role_name, permission_flags)
         VALUES (?, ?, ?);
         )";
-        for (const auto& role : roles) {
-            pstmt = API->prepareStatement(query);
-            pstmt->setInt(1, problem_id);
-            pstmt->setString(2, role["role_name"].get<std::string>());
-            pstmt->setInt(3, role["permission_flags"].get<int>());
-            pstmt->execute();
+        try {
+            for (const auto& role : body["problem_roles"]) {
+                pstmt = API->prepareStatement(query);
+                pstmt->setInt(1, problem_id);
+                pstmt->setString(2, role["role_name"].get<std::string>());
+                pstmt->setInt(3, role["permission_flags"].get<int>());
+                pstmt->execute();
+            }
+        } catch (const std::exception& e) {
+            badReq(e.what());
         }
 
         API->commitTransaction();
