@@ -4,6 +4,8 @@
 #include <nlohmann/json.hpp>
 #include "../../API/api.hpp"
 #include "../../Programs/jwt.hpp"
+
+#define serverError(reason) return crow::response(500, R"({"error": ")" + reason + R"("})")
 namespace {
 inline crow::response GET(const crow::request& req, std::string jwt, std::unique_ptr<APIs>& API) {
     u_int32_t problemsPerPage = 30, offset = 0;
@@ -76,12 +78,15 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
         )";
         std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
         pstmt->setInt(1, JWT::getUserID(jwt));
-        pstmt->setString(2, body["title"].get<std::string>());
-        pstmt->setString(3, body["description"].get<std::string>());
-        pstmt->setString(4, body["input_format"].get<std::string>());
-        pstmt->setString(5, body["output_format"].get<std::string>());
-        pstmt->setString(6, difficulty);
+        try {
+        pstmt->setString(2, body["problem"]["title"].get<std::string>());
+        pstmt->setString(3, body["problem"]["description"].get<std::string>());
+        pstmt->setString(4, body["problem"]["input_format"].get<std::string>());
+        pstmt->setString(5, body["problem"]["output_format"].get<std::string>());
+        pstmt->setString(6, body["problem"]["difficulty"].get<std::string>());
         pstmt->execute();
+        } catch (const std::exception& e) {
+            serverError(e.what());
 
         // Get the problem_id
         query = "SELECT id FROM problems WHERE title = ?;";
