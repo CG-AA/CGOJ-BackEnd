@@ -4,7 +4,6 @@
  */
 
 #include "api.hpp"
-#include <crow.h>
 
 APIs::APIs(const std::string& SQL_host, const std::string& SQL_user, const std::string& SQL_password, const std::string& SQL_database, int SQL_port) {
     driver = sql::mysql::get_mysql_driver_instance();
@@ -35,19 +34,16 @@ std::unique_ptr<sql::PreparedStatement> APIs::prepareStatement(const std::string
 void APIs::beginTransaction() {
     mtx.lock();
     con->setAutoCommit(false);
-    CROW_LOG_INFO << "Transaction started";
 }
 
 void APIs::commitTransaction() {
     con->commit();
     con->setAutoCommit(true);
     mtx.unlock();
-    CROW_LOG_INFO << "Transaction committed";
 }
 
 void APIs::rollbackTransaction() {
     con->rollback();
     con->setAutoCommit(true);
     mtx.unlock();
-    CROW_LOG_INFO << "Transaction rolled back";
 }

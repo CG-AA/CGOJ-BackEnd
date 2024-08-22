@@ -58,37 +58,36 @@ inline crow::response GET(const crow::request& req, std::string jwt, std::unique
     return crow::response(200, problems.dump());
 }
 
-inline crow::response POST(const crow::request& req, std::string jwt, std::unique_ptr<APIs>& API) {
+inline crow::response POST(const crow::request& req, std::string jwt, std::unique_ptr<APIs>& API, const nlohmann::json& setting) {
     try {
         // Parse the request body
         nlohmann::json body = nlohmann::json::parse(req.body);
-        CROW_LOG_INFO << body.dump();
+        // Validate the request body
+        for (const auto& table : setting["problems_tables"].items()) {
+            const std::string& tableName = table.key();
+            const auto& requiredFields = table.value();
 
-        API->beginTransaction();
+        }
         // Validate difficulty
         std::string difficulty = body["difficulty"].get<std::string>();
         if (difficulty != "Easy" && difficulty != "Medium" && difficulty != "Hard") {
             return crow::response(400, "Invalid difficulty");
         }
-        CROW_LOG_INFO << "Difficulty: " << difficulty;
+        API->beginTransaction();
 
         // Insert the problem
         std::string query = R"(
         INSERT INTO problems (owner_id, title, description, input_format, output_format, difficulty)
         VALUES (?, ?, ?, ?, ?, ?);
         )";
-        CROW_LOG_INFO << query;
         std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
-        CROW_LOG_INFO << JWT::getUserID(jwt);
         pstmt->setInt(1, JWT::getUserID(jwt));
         pstmt->setString(2, body["title"].get<std::string>());
         pstmt->setString(3, body["description"].get<std::string>());
         pstmt->setString(4, body["input_format"].get<std::string>());
         pstmt->setString(5, body["output_format"].get<std::string>());
         pstmt->setString(6, difficulty);
-        CROW_LOG_INFO << "Owner ID: " << JWT::getUserID(jwt);
         pstmt->execute();
-        CROW_LOG_INFO << "Problem inserted";
 
         // Get the problem_id
         query = "SELECT id FROM problems WHERE title = ?;";
@@ -99,7 +98,6 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
             return crow::response(500, "Internal server error");
         }
         int problem_id = res->getInt("id");
-        CROW_LOG_INFO << "Problem ID: " << problem_id;
 
         // Insert sample IO
         nlohmann::json sample_inputs = body["sample_inputs"];
@@ -118,7 +116,6 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
             pstmt->setString(3, sample_outputs[i].get<std::string>());
             pstmt->execute();
         }
-        CROW_LOG_INFO << "Sample IO inserted";
 
         // Insert tags
         nlohmann::json tags = body["tags"];
@@ -129,10 +126,9 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
         for (const auto& tag : tags) {
             pstmt = API->prepareStatement(query);
             pstmt->setInt(1, problem_id);
-            pstmt->setInt(2, tag.get<int>());
+            pstmt->setInt(2, tag);
             pstmt->execute();
         }
-        CROW_LOG_INFO << "Tags inserted";
 
         // Insert test cases
         nlohmann::json testcases = body["testcases"];
@@ -160,7 +156,6 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
             pstmt->setInt(6, testcase["score"].get<int>());
             pstmt->execute();
         }
-        CROW_LOG_INFO << "Test cases inserted";
 
         // Insert roles
         nlohmann::json roles = body["roles"];
@@ -175,14 +170,13 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
             pstmt->setInt(3, role["permission_flags"].get<int>());
             pstmt->execute();
         }
-        CROW_LOG_INFO << "Roles inserted";
 
         API->commitTransaction();
         return crow::response(200, "Problem created");
     } catch (const std::exception& e) {
         CROW_LOG_ERROR << "Exception occurred: " << e.what();
         API->rollbackTransaction();
-        return crow::response(500, std::string("Internal server error: ") + e.what());
+        return crow::response(500, "Internal server error");
     }
 }
 }// namespace
@@ -204,7 +198,7 @@ inline void problemsRoute (crow::App<crow::CORSHandler>& app, nlohmann::json& se
         if (req.method == "GET"_method) {
             return GET(req, jwt, API);
         } else /*if (req.method == "POST"_method)*/ {
-            return POST(req, jwt, API);
+            return POST(req, jwt, API, settings);
         }
 
     });
