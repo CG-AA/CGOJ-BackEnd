@@ -57,6 +57,11 @@
             "role_name",
             "permission_flags"
         ]
-    }
+    },
+    "valid_difficulties": [
+        "easy",
+        "medium",
+        "hard"
+    ]
 
 }

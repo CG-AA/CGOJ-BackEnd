@@ -62,15 +62,9 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
     try {
         // Parse the request body
         nlohmann::json body = nlohmann::json::parse(req.body);
-        // Validate the request body
-        for (const auto& table : setting["problems_tables"].items()) {
-            const std::string& tableName = table.key();
-            const auto& requiredFields = table.value();
-
-        }
         // Validate difficulty
-        std::string difficulty = body["difficulty"].get<std::string>();
-        if (difficulty != "Easy" && difficulty != "Medium" && difficulty != "Hard") {
+        std::string difficulty = body["problem"]["difficulty"].get<std::string>();
+        if (setting["valid_difficulties"].find(difficulty) == setting["valid_difficulties"].end()) {
             return crow::response(400, R"({"error": "Invalid difficulty"})");
         }
         API->beginTransaction();
