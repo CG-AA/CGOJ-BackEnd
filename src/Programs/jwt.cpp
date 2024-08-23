@@ -29,11 +29,8 @@ int16_t JWT::getSitePermissionFlags(const std::string& jwt) {
             throw std::runtime_error("Claim 'site_permission_flags' not found");
         }
 
-        CROW_LOG_INFO << "Payload: " << decoded.get_payload();
-        CROW_LOG_INFO << "site_permission_flags: " << decoded.get_payload_claim("site_permission_flags").as_string();
-
         try {
-            return static_cast<int16_t>(decoded.get_payload_claim("site_permission_flags").as_integer());
+            return static_cast<int16_t>(std::stoi(decoded.get_payload_claim("site_permission_flags").as_string()));
         } catch (const std::bad_cast& e) {
             throw std::runtime_error("Claim 'site_permission_flags' is not an integer");
         }
