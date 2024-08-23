@@ -72,8 +72,6 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
         nlohmann::json body = nlohmann::json::parse(req.body);
         // Validate difficulty
         std::string difficulty = body["problem"]["difficulty"].get<std::string>();
-        CROW_LOG_INFO << difficulty;
-        CROW_LOG_INFO << setting["valid_difficulties"].dump();
         try {
             if (std::find(setting["valid_difficulties"].begin(), setting["valid_difficulties"].end(), difficulty) == setting["valid_difficulties"].end()) {
                 badReq("Invalid difficulty");
@@ -81,7 +79,6 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
         } catch (const std::exception& e) {
             badReq(e.what());
         }
-        CROW_LOG_INFO << "Valid difficulty";
         API->beginTransaction();
 
         // Insert the problem
@@ -105,7 +102,7 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
         // Get the problem_id
         query = "SELECT id FROM problems WHERE title = ?;";
         pstmt = API->prepareStatement(query);
-        pstmt->setString(1, body["title"].get<std::string>());
+        pstmt->setString(1, body["problem"]["title"].get<std::string>());
         std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
         if (!res->next()) {
             return crow::response(500, "Internal server error");
@@ -131,9 +128,29 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
 
         // Insert tags
         query = R"(
-        INSERT INTO problem_tags (problem_id, tag_id)
+        INSERT INTO problem_tags (problem_id, tag_name)
         VALUES (?, ?);
         )";
+        //check if the tag exists
+        try {
+            for (const auto& tag : body["problem_tags"]) {
+                pstmt = API->prepareStatement("SELECT * FROM tags WHERE name = ?;");
+                pstmt->setString(1, tag.get<std::string>());
+                res.reset(pstmt->executeQuery());
+                if (!res->next()) {
+                    // Insert the tag if it does not exist
+                    try{
+                        pstmt = API->prepareStatement("INSERT INTO tags (name) VALUES (?);");
+                        pstmt->setString(1, tag.get<std::string>());
+                        pstmt->execute();
+                    } catch (const std::exception& e) {
+                        badReq(e.what());
+                    }
+                }
+            }
+        } catch (const std::exception& e) {
+            badReq(e.what());
+        }
         try{
             for (const auto& tag : body["problem_tags"]) {
                 pstmt = API->prepareStatement(query);
