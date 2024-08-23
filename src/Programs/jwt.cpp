@@ -4,6 +4,7 @@
  * @brief Implementation of the JSON Web Token (JWT) functions.
  */
 #include "jwt.hpp"
+#include <crow.h>
 
 
 void JWT::verifyJWT(std::string jwt, nlohmann::json& settings, std::string BE_IP) {
@@ -27,7 +28,15 @@ int16_t JWT::getSitePermissionFlags(const std::string& jwt) {
         if (!decoded.has_payload_claim("site_permission_flags")) {
             throw std::runtime_error("Claim 'site_permission_flags' not found");
         }
-        return static_cast<int16_t>(decoded.get_payload_claim("site_permission_flags").as_integer());
+
+        CROW_LOG_INFO << "Payload: " << decoded.get_payload();
+        CROW_LOG_INFO << "site_permission_flags: " << decoded.get_payload_claim("site_permission_flags").as_string();
+
+        try {
+            return static_cast<int16_t>(decoded.get_payload_claim("site_permission_flags").as_integer());
+        } catch (const std::bad_cast& e) {
+            throw std::runtime_error("Claim 'site_permission_flags' is not an integer");
+        }
     } catch (const std::exception& e) {
         throw std::runtime_error(std::string("Failed to decode JWT: ") + e.what());
     }
