@@ -62,6 +62,7 @@ std::string JWT::generateJWT(nlohmann::json& settings, std::string BE_IP, int us
     pstmt->setInt(1, user_id);
     std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
     nlohmann::json roles;
+    roles.push_back("everyone");
     while(res->next()) {
         roles.push_back(res->getString("role_name"));
     }

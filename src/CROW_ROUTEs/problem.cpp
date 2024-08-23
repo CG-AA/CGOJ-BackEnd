@@ -202,7 +202,6 @@ void ROUTE_problem(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, 
             }
         } catch (const std::exception& e) {
         }
-        roles.push_back("everyone");
         nlohmann::json problem_roles = get_problem_roles(sqlAPI, problemId);
         //permission check
         if(!have_permission(settings, "view", roles, problem_roles)){
