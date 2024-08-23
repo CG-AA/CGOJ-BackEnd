@@ -200,6 +200,26 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
         INSERT INTO problem_role (problem_id, role_name, permission_flags)
         VALUES (?, ?, ?);
         )";
+        //check if the role exists
+        try {
+            for (const auto& role : body["problem_roles"]) {
+                pstmt = API->prepareStatement("SELECT * FROM roles WHERE name = ?;");
+                pstmt->setString(1, role["role_name"].get<std::string>());
+                res.reset(pstmt->executeQuery());
+                if (!res->next()) {
+                    // Insert the role if it does not exist
+                    try{
+                        pstmt = API->prepareStatement("INSERT INTO roles (name) VALUES (?);");
+                        pstmt->setString(1, role["role_name"].get<std::string>());
+                        pstmt->execute();
+                    } catch (const std::exception& e) {
+                        badReq(e.what());
+                    }
+                }
+            }
+        } catch (const std::exception& e) {
+            badReq(e.what());
+        }
         try {
             for (const auto& role : body["problem_roles"]) {
                 pstmt = API->prepareStatement(query);
