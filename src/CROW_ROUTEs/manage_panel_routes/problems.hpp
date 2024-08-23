@@ -72,6 +72,8 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
         nlohmann::json body = nlohmann::json::parse(req.body);
         // Validate difficulty
         std::string difficulty = body["problem"]["difficulty"].get<std::string>();
+        CROW_LOG_INFO << difficulty;
+        CROW_LOG_INFO << setting["valid_difficulties"].dump();
         if (setting["valid_difficulties"].find(difficulty) == setting["valid_difficulties"].end()) {
             return crow::response(400, R"({"error": "Invalid difficulty"})");
         }
@@ -205,8 +207,6 @@ inline void problemsRoute (crow::App<crow::CORSHandler>& app, nlohmann::json& se
         // verify the JWT(user must login first)
         std::string jwt = req.get_header_value("Authorization");
         try {
-            CROW_LOG_INFO << jwt;
-            CROW_LOG_INFO << IP;
             JWT::verifyJWT(jwt, settings, IP);
         } catch (const std::exception& e) {
             CROW_LOG_INFO << e.what();
