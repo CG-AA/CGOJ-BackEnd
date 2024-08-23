@@ -74,9 +74,14 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
         std::string difficulty = body["problem"]["difficulty"].get<std::string>();
         CROW_LOG_INFO << difficulty;
         CROW_LOG_INFO << setting["valid_difficulties"].dump();
-        if (std::find(setting["valid_difficulties"].begin(), setting["valid_difficulties"].end(), difficulty) == setting["valid_difficulties"].end()) {
-            badReq("Invalid difficulty");
+        try {
+            if (std::find(setting["valid_difficulties"].begin(), setting["valid_difficulties"].end(), difficulty) == setting["valid_difficulties"].end()) {
+                badReq("Invalid difficulty");
+            }
+        } catch (const std::exception& e) {
+            badReq(e.what());
         }
+        CROW_LOG_INFO << "Valid difficulty";
         API->beginTransaction();
 
         // Insert the problem
