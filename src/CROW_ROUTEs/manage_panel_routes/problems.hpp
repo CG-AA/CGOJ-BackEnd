@@ -70,7 +70,9 @@ inline crow::response GET(const crow::request& req, std::string jwt, std::unique
         }
         query += permissionFilter;
         query += "LIMIT ? OFFSET ?";
+        CROW_LOG_INFO << query;
         pstmt = API->prepareStatement(query);
+        CROW_LOG_INFO << countQuery;
         countPstmt = API->prepareStatement(countQuery);
 
         for (size_t i = 0; i < roles.size(); ++i) {
