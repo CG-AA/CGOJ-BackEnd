@@ -21,32 +21,43 @@ inline crow::response GET(const crow::request& req, std::string jwt, std::unique
     if (req.url_params.get("offset")) {
         offset = std::stoi(req.url_params.get("offset"));
     }
+
     std::string query = "SELECT p.id, u.name AS owner_name, p.title, p.difficulty "
                         "FROM problems p "
                         "JOIN users u ON p.owner_id = u.id ";
     std::string countQuery = "SELECT COUNT(*) "
-                            "FROM problems p "
-                            "JOIN users u ON p.owner_id = u.id ";
+                             "FROM problems p "
+                             "JOIN users u ON p.owner_id = u.id ";
 
     std::unique_ptr<sql::PreparedStatement> pstmt;
     std::unique_ptr<sql::PreparedStatement> countPstmt;
 
-    //if the user is a site admin
-    if(JWT::getSitePermissionFlags(jwt) & 1){
-        //get all the problems
+    // If the user is a site admin
+    if (JWT::getSitePermissionFlags(jwt) & 1) {
+        // Get all the problems
         query += "LIMIT ? OFFSET ?";
         pstmt = API->prepareStatement(query);
         pstmt->setInt(1, problemsPerPage);
         pstmt->setInt(2, offset);
-        //get the count of all the problems
+
+        // Get the count of all the problems
         countPstmt = API->prepareStatement(countQuery);
     } else {
         std::string roleFilter = "JOIN problem_role pr ON p.id = pr.problem_id "
-                                "WHERE pr.role_name IN (";
+                                 "WHERE pr.role_name IN (";
         std::string permissionFilter = ") AND pr.permission_flags & 1 <> 0 ";
-        //get the roles
+
+        // Get the roles
         nlohmann::json roles = JWT::getRoles(jwt);
-        //get the problems that the user has permission to modify
+
+        // Handle case where roles are empty
+        if (roles.empty()) {
+            std::ostringstream oss;
+            oss << "{\"error\": \"No roles found\"}";
+            return crow::response(404, oss.str());
+        }
+
+        // Get the problems that the user has permission to modify
         query += roleFilter;
         countQuery += roleFilter;
         for (size_t i = 0; i < roles.size(); ++i) {
@@ -61,6 +72,7 @@ inline crow::response GET(const crow::request& req, std::string jwt, std::unique
         query += "LIMIT ? OFFSET ?";
         pstmt = API->prepareStatement(query);
         countPstmt = API->prepareStatement(countQuery);
+
         for (size_t i = 0; i < roles.size(); ++i) {
             pstmt->setString(i + 1, roles[i].get<std::string>());
             countPstmt->setString(i + 1, roles[i].get<std::string>());
@@ -68,32 +80,38 @@ inline crow::response GET(const crow::request& req, std::string jwt, std::unique
         pstmt->setInt(roles.size() + 1, problemsPerPage);
         pstmt->setInt(roles.size() + 2, offset);
     }
+
     nlohmann::json res, problems;
-    try{
-        std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
-        while(res->next()) {
+    try {
+        std::unique_ptr<sql::ResultSet> resultSet(pstmt->executeQuery());
+        while (resultSet->next()) {
             nlohmann::json problem;
-            problem["id"] = res->getInt("id");
-            problem["owner_name"] = res->getString("owner_name");
-            problem["title"] = res->getString("title");
-            problem["difficulty"] = res->getInt("difficulty");
+            problem["id"] = resultSet->getInt("id");
+            problem["owner_name"] = resultSet->getString("owner_name");
+            problem["title"] = resultSet->getString("title");
+            problem["difficulty"] = resultSet->getInt("difficulty");
             problems.push_back(problem);
         }
-        std::unique_ptr<sql::ResultSet> countRes(countPstmt->executeQuery());
-        if(countRes->next()){
-            problemsCount = countRes->getInt(1);
+
+        std::unique_ptr<sql::ResultSet> countResultSet(countPstmt->executeQuery());
+        if (countResultSet->next()) {
+            problemsCount = countResultSet->getInt(1);
         } else {
             problemsCount = -1;
         }
     } catch (const std::exception& e) {
-        return crow::response(500, "Internal server error");
+        std::ostringstream oss;
+        oss << "{\"error\": \"" << e.what() << "\"}";
+        return crow::response(500, oss.str());
     }
-    nlohmann::json res;
+
     res["problems"] = problems;
     res["problemsCount"] = problemsCount;
 
-    if (problems.size() == 0) {
-        return crow::response(204, "No problems found.");
+    if (problems.empty()) {
+        std::ostringstream oss;
+        oss << "{\"error\": \"No problems found\"}";
+        return crow::response(404, oss.str());
     } else {
         return crow::response(200, res.dump());
     }
