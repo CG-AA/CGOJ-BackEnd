@@ -4,21 +4,9 @@
 #include <nlohmann/json.hpp>
 #include "../../API/api.hpp"
 #include "../../Programs/jwt.hpp"
-inline void testcaseRoute(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& API) {
-    CROW_ROUTE(app, "/manage_panel/problems/<int>/testcases")
-    .methods("GET"_method, "POST"_method, "PUT"_method, "DELETE"_method)
-    ([&settings, &API, IP](const crow::request& req, int problem_id){
-        // verify the JWT(user must login first)
-        std::string jwt = req.get_header_value("Authorization");
-        try {
-            JWT::verifyJWT(jwt, settings, IP);
-        } catch (const std::exception& e) {
-            return crow::response(401, "Unauthorized");
-        }
-        if (!JWT::isPermissioned(jwt, problem_id, API)) {
-            return crow::response(403, "Forbidden");
-        }
-        if (req.method == "GET"_method) {    
+
+namespace {
+crow::response GET(const crow::request& req, std::string jwt, std::unique_ptr<APIs>& API, int problem_id) {
             std::string query = R"(
                 SELECT *
                 FROM problem_test_cases
@@ -40,6 +28,25 @@ inline void testcaseRoute(crow::App<crow::CORSHandler>& app, nlohmann::json& set
                 testcases.push_back(testcase);
             }
             return crow::response(200, testcases.dump());
+}//GET
+}//namespace
+
+inline void testcaseRoute(crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& API) {
+    CROW_ROUTE(app, "/manage_panel/problems/<int>/testcases")
+    .methods("GET"_method, "POST"_method, "PUT"_method, "DELETE"_method)
+    ([&settings, &API, IP](const crow::request& req, int problem_id){
+        // verify the JWT(user must login first)
+        std::string jwt = req.get_header_value("Authorization");
+        try {
+            JWT::verifyJWT(jwt, settings, IP);
+        } catch (const std::exception& e) {
+            return crow::response(401, "Unauthorized");
+        }
+        if (!JWT::isPermissioned(jwt, problem_id, API)) {
+            return crow::response(403, "Forbidden");
+        }
+        if (req.method == "GET"_method) {
+            return GET(req, jwt, API, problem_id);
         } else if (req.method == "POST"_method) {
             //replace all the testcases
             std::string query = "DELETE FROM problem_test_cases WHERE problem_id = ?;";
