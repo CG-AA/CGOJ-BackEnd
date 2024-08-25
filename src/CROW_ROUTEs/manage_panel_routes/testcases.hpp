@@ -63,6 +63,7 @@ crow::response POST(const crow::request& req, std::string jwt, std::unique_ptr<A
         pstmt->setInt(6, testcase["score"].get<int>());
         pstmt->execute();
     }
+    API->commitTransaction();
     return crow::response(200, "Test cases updated");
     } catch (const std::exception& e) {
         badReq(e.what());

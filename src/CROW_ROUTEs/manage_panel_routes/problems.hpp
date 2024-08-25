@@ -294,10 +294,10 @@ inline crow::response POST(const crow::request& req, std::string jwt, std::uniqu
 }
 }// namespace
 
-inline void problemsRoute (crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& API) {
+inline void problemsRoute (crow::App<crow::CORSHandler>& app, nlohmann::json& settings, std::string IP, std::unique_ptr<APIs>& API, std::unique_ptr<APIs>& modifyAPI) {
     CROW_ROUTE(app, "/manage_panel/problems")
     .methods("GET"_method, "POST"_method)
-    ([&settings, &API, IP](const crow::request& req){
+    ([&settings, &API, &modifyAPI, IP](const crow::request& req){
         // verify the JWT(user must login first)
         std::string jwt = req.get_header_value("Authorization");
         try {
@@ -309,7 +309,7 @@ inline void problemsRoute (crow::App<crow::CORSHandler>& app, nlohmann::json& se
         if (req.method == "GET"_method) {
             return GET(req, jwt, API);
         } else /*if (req.method == "POST"_method)*/ {
-            return POST(req, jwt, API, settings);
+            return POST(req, jwt, modifyAPI, settings);
         }
 
     });

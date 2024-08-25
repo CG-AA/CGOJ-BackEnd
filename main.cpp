@@ -140,7 +140,7 @@ void setupRoutes() {
     ROUTE_problem(app, settings, IP, api, problem_cache);
     ROUTE_Register(app, settings, IP, api);
     ROUTE_Login(app, settings, IP, api);
-    ROUTE_manage_panel(app, settings, IP, modify_api);
+    ROUTE_manage_panel(app, settings, IP, modify_api, api);
 }
 
 /**
