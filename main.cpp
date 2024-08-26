@@ -40,6 +40,8 @@ cache::lru_cache<int8_t, nlohmann::json> problems_everyone_cache(100);
 /** Cache for specific problem data */
 cache::lru_cache<int16_t, nlohmann::json> problem_cache(1000);
 
+std::vector<std::string> accepted_languages;
+
 /**
  * @brief Loads the settings from the default settings file and the local settings file.
  * 
@@ -77,7 +79,6 @@ nlohmann::json loadSettings(const std::string& defaultSettingsFileName, const st
             defaultSettings[element.key()] = element.value();
         }
     }
-
 
     return defaultSettings;
 }
@@ -125,10 +126,26 @@ void setupCORS() {
         .global()
             .headers("Authorization", "content-Type")
             .methods("POST"_method, "OPTIONS"_method)
-            .origin(settings["CGFE_origin"].get<std::string>())
-        .prefix("/problems")
-            .headers("Authorization", "content-Type")
-            .methods("GET"_method, "OPTIONS"_method);
+            .origin(settings["CGFE_origin"].get<std::string>());
+}
+
+void setupAcceptedLanguages() {
+    std::string query = "SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'problem_submissions' AND COLUMN_NAME = 'language';";
+    std::unique_ptr<sql::PreparedStatement> pstmt(api->prepareStatement(query));
+    std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+    if (res->next()) {
+        std::string column_type = res->getString("COLUMN_TYPE");
+        std::string type = column_type.substr(5, column_type.size() - 6);
+        std::string delimiter = "','";
+        size_t pos = 0;
+        while ((pos = type.find(delimiter)) != std::string::npos) {
+            accepted_languages.push_back(type.substr(0, pos));
+            type.erase(0, pos + delimiter.length());
+        }
+        accepted_languages.push_back(type);
+    } else {
+        std::cerr << "Error: Could not fetch accepted languages from the database." << std::endl;
+    }
 }
 
 /**
@@ -158,6 +175,7 @@ int main()
     setupRoutes();
     api = setupAPIs(settings);
     modify_api = setupAPIs(settings);
+    setupAcceptedLanguages();
 
     app.port(settings["port"].get<int>()).multithreaded().run();// .ssl(std::move(ctx))
 }

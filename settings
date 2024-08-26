@@ -19,7 +19,8 @@
             "edit": 2,
             "delete": 3,
             "view_submissions": 4,
-            "manage_comments": 5
+            "manage_comments": 5,
+            "submit": 6
         },
         "site": {
             "admin": 0

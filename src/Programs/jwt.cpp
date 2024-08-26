@@ -90,8 +90,8 @@ std::string JWT::generateJWT(nlohmann::json& settings, std::string BE_IP, int us
     return token;
 }
 
-//if the user is not a site admin and dont got the permission
-bool JWT::isPermissioned(std::string jwt, int problem_id, std::unique_ptr<APIs>& API) {
+//return false if the user is not a site admin and dont got the permission
+bool JWT::isPermissioned(std::string jwt, int problem_id, std::unique_ptr<APIs>& API, int permission_flag) {
     try {
         // Check if the user has site-wide permission
         if (!(JWT::getSitePermissionFlags(jwt) & 1)) {
@@ -105,7 +105,7 @@ bool JWT::isPermissioned(std::string jwt, int problem_id, std::unique_ptr<APIs>&
                 query += "?";
                 if (i < roles.size() - 1) query += ", ";
             }
-            query += ") AND permission_flags & 1 <> 0";
+            query += ") AND (permission_flags & ?) <> 0";
 
             // Prepare the statement
             std::unique_ptr<sql::PreparedStatement> pstmt(API->prepareStatement(query));
@@ -113,6 +113,7 @@ bool JWT::isPermissioned(std::string jwt, int problem_id, std::unique_ptr<APIs>&
             for (size_t i = 0; i < roles.size(); ++i) {
                 pstmt->setString(i + 2, roles[i].get<std::string>());
             }
+            pstmt->setInt(roles.size() + 2, 1 << permission_flag); // Shift 1 by permission_flag bits
 
             // Execute the query
             std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
@@ -120,7 +121,11 @@ bool JWT::isPermissioned(std::string jwt, int problem_id, std::unique_ptr<APIs>&
                 return false;
             }
         }
+    } catch (const sql::SQLException& e) {
+        std::cerr << "SQL error: " << e.what() << std::endl;
+        return false;
     } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
         return false;
     }
     return true;
