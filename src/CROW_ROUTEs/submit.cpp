@@ -1,9 +1,10 @@
 #include "submit.hpp"
+#include "../API/sand_box_api.hpp"
 
 #define JSON_ERROR(message) nlohmann::json({{"error", message}})
 
-void ROUTE_Judge(crow::App<crow::CORSHandler>& app, nlohmann::json& settings , std::string IP, std::unique_ptr<APIs>& sqlAPI, std::unique_ptr<APIs>& submissionAPI, std::vector<std::string> accepted_languages) {
-    CROW_ROUTE(app, "/judge")
+void ROUTE_Submit(crow::App<crow::CORSHandler>& app, nlohmann::json& settings , std::string IP, std::unique_ptr<APIs>& sqlAPI, std::unique_ptr<APIs>& submissionAPI, std::vector<std::string> accepted_languages, std::unique_ptr<sand_box_api>& sandboxAPI) {
+    CROW_ROUTE(app, "/submit")
     .methods("POST"_method)
     ([&](const crow::request& req){
         // Parse the request body
@@ -36,5 +37,8 @@ void ROUTE_Judge(crow::App<crow::CORSHandler>& app, nlohmann::json& settings , s
             return crow::response(400, JSON_ERROR("Invalid language"));
         }
         // testing connection /w sandbox
-        
+        std::string response = sandboxAPI->POST(source_code, "");
+        CROW_LOG_INFO << response;
+        return crow::response(200, response);
+    });
 }

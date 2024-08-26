@@ -12,6 +12,7 @@
 #include <string>
 
 #include "src/API/api.hpp"
+#include "src/API/sand_box_api.hpp"
 
 #include "src/CROW_ROUTEs/register.hpp"
 #include "src/CROW_ROUTEs/login.hpp"
@@ -28,6 +29,8 @@
 nlohmann::json settings;
 /** Pointer to the APIs class. */
 std::unique_ptr<APIs> api, modify_api, submission_api;
+/** Pointer to the SandBoxAPI class. */
+std::unique_ptr<sand_box_api> sandbox_api;
 /** The CROW application object. */
 crow::App<crow::CORSHandler> app;
 /** The IP address of the BE. */
@@ -93,13 +96,21 @@ nlohmann::json loadSettings(const std::string& defaultSettingsFileName, const st
  * @param settings The JSON object containing the MySQL connection settings.
  * @return A unique pointer to the created APIs instance.
  */
-auto setupAPIs(const nlohmann::json& settings) {
+auto setupSqlAPI(const nlohmann::json& settings) {
     return std::make_unique<APIs>(
         settings["MySQL"]["host"].get<std::string>(),
         settings["MySQL"]["user"].get<std::string>(),
         settings["MySQL"]["password"].get<std::string>(),
         settings["MySQL"]["database"].get<std::string>(),
         settings["MySQL"]["port"].get<int>()
+    );
+}
+
+auto setupSandboxAPI(const nlohmann::json& settings) {
+    return std::make_unique<sand_box_api>(
+        settings["sandbox"]["host"].get<std::string>(),
+        settings["sandbox"]["port"].get<int>(),
+        settings["sandbox"]["token"].get<std::string>()
     );
 }
 
@@ -158,6 +169,7 @@ void setupRoutes() {
     ROUTE_Register(app, settings, IP, api);
     ROUTE_Login(app, settings, IP, api);
     ROUTE_manage_panel(app, settings, IP, modify_api, api);
+    ROUTE_Submit(app, settings, IP, api, submission_api, accepted_languages, sandbox_api);
 }
 
 /**
@@ -173,9 +185,10 @@ int main()
     // setupSSL(ctx);
     setupCORS();
     setupRoutes();
-    api = setupAPIs(settings);
-    modify_api = setupAPIs(settings);
-    submission_api = setupAPIs(settings);
+    api = setupSqlAPI(settings);
+    modify_api = setupSqlAPI(settings);
+    submission_api = setupSqlAPI(settings);
+    sandbox_api = setupSandboxAPI(settings);
     setupAcceptedLanguages();
 
     app.port(settings["port"].get<int>()).multithreaded().run();// .ssl(std::move(ctx))
