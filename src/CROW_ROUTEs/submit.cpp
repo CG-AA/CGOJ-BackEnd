@@ -1,8 +1,8 @@
-#include "judge.hpp"
+#include "submit.hpp"
 
 #define JSON_ERROR(message) nlohmann::json({{"error", message}})
 
-void ROUTE_Judge(crow::App<crow::CORSHandler>& app, nlohmann::json& settings , std::string IP, std::unique_ptr<APIs>& sqlAPI, std::vector<std::string> accepted_languages){
+void ROUTE_Judge(crow::App<crow::CORSHandler>& app, nlohmann::json& settings , std::string IP, std::unique_ptr<APIs>& sqlAPI, std::unique_ptr<APIs>& submissionAPI, std::vector<std::string> accepted_languages) {
     CROW_ROUTE(app, "/judge")
     .methods("POST"_method)
     ([&](const crow::request& req){
@@ -16,7 +16,7 @@ void ROUTE_Judge(crow::App<crow::CORSHandler>& app, nlohmann::json& settings , s
             return crow::response(401, JSON_ERROR(e.what()));
         }
         try {
-            if(!JWT::isPermissioned(jwt, body["problem_id"].get<int>(), sqlAPI, settings["permission_flags"]["submit"].get<int>());){
+            if(!JWT::isPermissioned(jwt, body["problem_id"].get<int>(), sqlAPI, settings["permission_flags"]["submit"].get<int>())){
                 return crow::response(403, JSON_ERROR("Permission denied"));
             }
         } catch (const std::exception& e) {
@@ -35,4 +35,6 @@ void ROUTE_Judge(crow::App<crow::CORSHandler>& app, nlohmann::json& settings , s
         if (std::find(accepted_languages.begin(), accepted_languages.end(), language) == accepted_languages.end()) {
             return crow::response(400, JSON_ERROR("Invalid language"));
         }
+        // testing connection /w sandbox
+        
 }

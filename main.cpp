@@ -18,6 +18,7 @@
 #include "src/CROW_ROUTEs/problems.hpp"
 #include "src/CROW_ROUTEs/problem.hpp"
 #include "src/CROW_ROUTEs/manage_panel.hpp"
+#include "src/CROW_ROUTEs/submit.hpp"
 
 #include "src/Programs/get_ip.hpp"
 
@@ -26,8 +27,7 @@
 /** Configuration settings for the application. */
 nlohmann::json settings;
 /** Pointer to the APIs class. */
-std::unique_ptr<APIs> api;
-std::unique_ptr<APIs> modify_api;
+std::unique_ptr<APIs> api, modify_api, submission_api;
 /** The CROW application object. */
 crow::App<crow::CORSHandler> app;
 /** The IP address of the BE. */
@@ -175,6 +175,7 @@ int main()
     setupRoutes();
     api = setupAPIs(settings);
     modify_api = setupAPIs(settings);
+    submission_api = setupAPIs(settings);
     setupAcceptedLanguages();
 
     app.port(settings["port"].get<int>()).multithreaded().run();// .ssl(std::move(ctx))

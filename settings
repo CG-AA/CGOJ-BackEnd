@@ -12,6 +12,11 @@
         "database": "CG_DB",
         "port": 45802
     },
+    "SandBox": {
+        "host": "host.docker.internal",
+        "port": 45803,
+        "token": "replace_me"
+    },
     "permission_flags": {
         "problems": {
             "view": 0,
