@@ -100,7 +100,7 @@ inline void problemRoute(crow::App<crow::CORSHandler>& app, nlohmann::json& sett
             return crow::response(401, "Unauthorized");
         }
         //if the user is not a site admin and dont got the permission
-        if (!JWT::isPermissioned(jwt, problem_id, API)) {
+        if (!JWT::isPermissioned(jwt, problem_id, API, settings["permission_flags"]["problems"]["edit"].get<int>())) {
             return crow::response(403, "Forbidden");
         }
         if (req.method == "PUT"_method) {

@@ -82,7 +82,7 @@ inline void testcaseRoute(crow::App<crow::CORSHandler>& app, nlohmann::json& set
         } catch (const std::exception& e) {
             return crow::response(401, "Unauthorized");
         }
-        if (!JWT::isPermissioned(jwt, problem_id, API)) {
+        if (!JWT::isPermissioned(jwt, problem_id, API, settings["permission_flags"]["problems"]["edit"].get<int>())) {
             return crow::response(403, "Forbidden");
         }
         if (req.method == "GET"_method) {
