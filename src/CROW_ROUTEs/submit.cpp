@@ -36,6 +36,33 @@ void ROUTE_Submit(crow::App<crow::CORSHandler>& app, nlohmann::json& settings , 
         if (std::find(accepted_languages.begin(), accepted_languages.end(), language) == accepted_languages.end()) {
             return crow::response(400, JSON_ERROR("Invalid language"));
         }
+        // fetch the test cases
+        nlohmann::json test_cases;
+        try {
+            std::string query = "SELECT id, input, time_limit, memory_limit"
+                                "FROM problem_test_cases"
+                                "WHERE problem_id = ?;";
+            std::unique_ptr<sql::PreparedStatement> pstmt(sqlAPI->prepareStatement(query));
+            pstmt->setInt(1, problem_id);
+            std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+            while (res->next()) {
+                int test_case_id = res->getInt("id");
+                std::string input = res->getString("input");
+                int time_limit = res->getInt("time_limit");
+                int memory_limit = res->getInt("memory_limit");
+                nlohmann::json test_case = {
+                    {"id", test_case_id},
+                    {"in", input},
+                    {"ti", time_limit},
+                    {"me", memory_limit}
+                };
+                test_cases.push_back(test_case);
+            }
+        } catch (const std::exception& e) {
+            return crow::response(500, JSON_ERROR(e.what()));
+        }
+        // 
+
         // testing connection /w sandbox
         std::string response = sandboxAPI->POST(source_code, "");
         CROW_LOG_INFO << response;
