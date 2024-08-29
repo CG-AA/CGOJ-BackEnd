@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <mutex>
+#include <nlohmann/json.hpp>
 
 class sand_box_api {
     std::string full_url;
@@ -28,8 +29,8 @@ public:
         this->token = token;
     }
 
-    // Send POST w/ code && input to the sandbox
-    std::string POST(const std::string& code, const std::string& input) {
+    // Send POST to the sandbox
+    std::string POST(const nlohmann::json& payload) {
         std::lock_guard<std::mutex> lock(mtx);
         CURL *curl;
         CURLcode res;
@@ -37,11 +38,11 @@ public:
         curl = curl_easy_init();
         if (curl) {
             struct curl_slist *headers = nullptr;
-            headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
+            headers = curl_slist_append(headers, "Content-Type: application/json");
             headers = curl_slist_append(headers, ("Authorization: " + token).c_str());
 
-            curl_easy_setopt(curl, CURLOPT_URL, (full_url + "/api/endpoint").c_str());
-            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, ("code=" + code + "&input=" + input).c_str());
+            curl_easy_setopt(curl, CURLOPT_URL, (full_url).c_str());
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.dump().c_str());
             curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
             curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
             curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
