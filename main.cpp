@@ -108,9 +108,9 @@ auto setupSqlAPI(const nlohmann::json& settings) {
 
 auto setupSandboxAPI(const nlohmann::json& settings) {
     return std::make_unique<sand_box_api>(
-        settings["sandbox"]["host"].get<std::string>(),
-        settings["sandbox"]["port"].get<int>(),
-        settings["sandbox"]["token"].get<std::string>()
+        settings["SandBox"]["host"].get<std::string>(),
+        settings["SandBox"]["port"].get<int>(),
+        settings["SandBox"]["token"].get<std::string>()
     );
 }
 

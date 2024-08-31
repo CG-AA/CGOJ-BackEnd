@@ -7,6 +7,9 @@
 
 #include <jwt-cpp/jwt.h>
 
+crow::response JSON_RES(int code, const std::string& message) {
+    return crow::response(code, "{\"message\": \"" + message + "\"}");
+}
 namespace {
 nlohmann::json getProblems(std::unique_ptr<APIs>& API, std::vector<std::string> roles, int problemsPerPage, int offset) {
     nlohmann::json problems;
@@ -86,7 +89,17 @@ void ROUTE_problems(crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
                 roles = JWT::getRoles(jwt);
             }
         } catch (const std::exception& e) {
+            roles = {"everyone"};
         }
+        // check problems count
+        int64_t problemsCount = getProblemsCount(API, roles);
+        if(problemsCount == -1) {
+            return JSON_RES(500, "Internal Server Error");
+        }
+        if (problemsCount == 0) {
+            return JSON_RES(204, "No problems found.");
+        }
+
         // Handle page query parameter
         u_int32_t page = 1, problemsPerPage = 10;
         if (req.url_params.get("page")) {
@@ -114,15 +127,10 @@ void ROUTE_problems(crow::App<crow::CORSHandler>& app, nlohmann::json& settings,
                 problems.push_back(problems_everyone_cache.get(i));
             }
         }
-        int64_t problemsCount = getProblemsCount(API, roles);
         nlohmann::json res;
         res["problems"] = problems;
         res["problemsCount"] = problemsCount;
 
-        if (problems.size() == 0) {
-            return crow::response(204, "No problems found.");
-        } else {
-            return crow::response(200, res.dump());
-        }
+        return crow::response(200, res.dump());
     });
 }

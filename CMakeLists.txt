@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(BackEnd)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 # Include directories for header files
 include_directories(CROW_ROUTEs)
